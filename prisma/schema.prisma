@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User{
+  id String @id @default(cuid())
+  username String @unique 
+  email String @unique
+  passwordHash String
+  image String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime @updatedAt
+  session Sessions[]
+  projects Projects[]
+  likes Like[]
+  forks Fork[]
+
+  @@index([username])
+  @@index([email])
+}
+
+model Sessions{
+  id String @id
+  userId String
+  expiresAt DateTime
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Projects{
+  id String @id @default(cuid())
+  title String
+  visiblity Visiblity @default(PRIVATE)
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  messages Message[]
+  like Like[]
+  forks Fork[] @relation("sourceForks")
+  forkOrigin Fork? @relation("forkedFrom")
+  status String @default("idle")
+
+  @@index([userId])
+  @@index([visiblity])
+  @@index([createdAt])
+}
+
+// model Image{
+//   id String @id @default(cuid())
+//   messageId String @unique
+//   url String
+//   messages Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+//   @@index([id])
+//   @@index([messageId])
+// }
+model Message{
+  id String @id @default(cuid())
+  content String @db.Text
+  reasoning String? @db.Text
+  role Role
+  projectId String
+  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @default(now())
+  generations Generations?
+
+  @@index([projectId])
+}
+model Generations{
+  id String @id @default(cuid())
+  files Json
+  messageId String @unique
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Like{
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String
+  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model Fork {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceId String
+  sourceProject Projects @relation("sourceForks", fields: [sourceId], references: [id], onDelete: Cascade)
+  forkedId String @unique
+  forkedProject Projects @relation("forkedFrom", fields: [forkedId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([sourceId])
+}
+
+enum Visiblity {
+  PRIVATE
+  PUBLIC
+}
+
+enum Role {
+  USER
+  ASSISTANT
+}

@@ -1,0 +1,45 @@
+{
+  "name": "I/0",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.4.0",
+    "@codesandbox/sandpack-react": "^2.20.0",
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "bcrypt": "^6.0.0",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "elevenlabs": "^1.59.0",
+    "figma-api": "^2.2.0-beta",
+    "lucide-react": "^1.8.0",
+    "next": "16.2.4",
+    "next-auth": "^4.24.14",
+    "pg": "^8.20.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "prisma": "^7.7.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5"
+  }
+}
