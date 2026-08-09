@@ -1,7 +1,7 @@
 "use server"
 import { ActionType } from "@/app/types/types"
 import z from "zod/v3"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import prisma from "@/app/lib/prisma"
 import { fromErrortoaction, toActionState } from "@/app/util/error-handler"
 

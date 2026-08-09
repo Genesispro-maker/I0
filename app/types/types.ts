@@ -24,7 +24,7 @@ export interface contextMenu {
 
 export type Authuser = Session["user"]
 
-export type EventType = "metadata" | "reasoning" | "code" | "done" | "error" | "suggestions" | "files" | "building" | "summary"
+export type EventType = "metadata" | "name" | "reasoning" | "code" | "done" | "error" | "suggestions" | "building" | "summary"
 
 export type FileCollection = Record<string, string>
 
@@ -47,17 +47,4 @@ export type Project = {
 export interface LoaderProps {
   size?: number; 
   color?: string;
-}
-
-export type stepType = "plan" | "file" | "build" | "done"
-
-export interface Stepevent{
-  id: string,
-  label: string,
-  kind: string,
-  meta?: string,
-  counts?: {
-    searches?: number,
-  },
-  status: 'active' | "done"
 }

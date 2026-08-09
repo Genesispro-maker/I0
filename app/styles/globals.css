@@ -1,36 +1,65 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline{
   --font-sans: var(--font-geist-sans)
 }
-
 
 @theme {
   --animate-collapsible-open: collapsible-open  200ms ease-out;
   --animate-collapsible-close: collapsible-close 150ms ease-in;
 }
 
-*{
+::selection {
+  background-color: #032042;
+  color: #6da7ec;
+}
+
+:root, :root.dark {
+  --bg-color-dark-default: black;
+  --text-color-dark: #ffffff;
+
+  --miscallenous: white;
+  
+  background-color: var(--bg-color-dark-default);
+  color: var(--text-color-dark);
+}
+
+:root.light {
+  --bg-color-light-default: white;
+  --text-color-light: #000000;
+
+  --miscallenous: black;
+
+  background-color: var(--bg-color-light-default);
+  color: var(--text-color-light);
+}
+
+
+* {
   scrollbar-width: thin;
   scrollbar-color: hsl(240, 1%, 36%) transparent;
 }
 
-html {
+html, body {
   height: 100%;
 }
 
 body {
-  height: 100%;
   position: relative;
-  background: black;
-  color: #fff;
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
 
-.prose{
-  background-color: hsl(0, 0%, 30%);
+.panel::-webkit-scrollbar{
+  display: none;
+}
+
+.panel{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .menu{

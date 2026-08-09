@@ -1,10 +1,10 @@
 import { useSandpack } from "@codesandbox/sandpack-react"
-import { Loader } from "@/app/util/constant"
+import { Loader } from "@/app/util/constants"
 import { useRef, useState } from "react"
 
-export function ErrorReader({messageId}: {messageId: string | undefined}) {
-  const { sandpack } = useSandpack()
+export function Mechanic({messageId}: {messageId: string | undefined}){
   const [loading, setLoading] = useState(false)
+  const { sandpack } = useSandpack()
   const index = useRef(0)
 
   const fix = async () => {
@@ -31,7 +31,7 @@ export function ErrorReader({messageId}: {messageId: string | undefined}) {
 
       if(index.current === fetchindex){
         for (const [path, content] of Object.entries(data.fixed)){
-          sandpack.updateFile(path, content as string) 
+          sandpack.updateFile(path, content as string)
         }
       }
     } catch (err) {

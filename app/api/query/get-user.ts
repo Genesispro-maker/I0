@@ -1,8 +1,9 @@
 import { authOptions } from "@/app/lib/auth"
 import prisma from "@/app/lib/prisma"
 import { getServerSession } from "next-auth"
+import { cache } from "react"
 
-export const getAuth = async () => {
+export const getAuth = cache(async () => {
     const session = await getServerSession(authOptions)
     
     if(!session?.user.id){
@@ -22,4 +23,4 @@ export const getAuth = async () => {
     })
 
     return user;
-}
+})

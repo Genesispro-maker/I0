@@ -1,19 +1,19 @@
 import prisma from "@/app/lib/prisma"
-import { parseFiles } from "@/app/util/constant"
+import { parseFiles } from "@/app/util/constants"
 import { fixprompt } from "@/app/util/prompt"
 
 export async function POST(req: Request){
     let body : { files: string, error: string, messageId: string }
     try {
         body = await req.json()
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.OPEN_ROUTER_API_KEY}`,
+                "Authorization": `Bearer ${process.env.GOOGLE}`,
             },
             body: JSON.stringify({ 
-                model: "openai/gpt-oss-120b:free",
+                model: "gemini-3.1-flash-lite",
                 messages: [
                     {
                         role: "system",
@@ -52,9 +52,14 @@ export async function POST(req: Request){
             },
             data: {
                 generations: {
-                    update:{
-                        files: merge
-                    } 
+                    upsert: {
+                        create: {
+                            files: merge,
+                        },
+                        update: {
+                            files: merge
+                        }
+                    }
                 }
             }
         })

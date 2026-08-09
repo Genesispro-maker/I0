@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react"
 export const TVeffect = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const requestRef = useRef<number>(0)
-    const lastFrameTimeRef = useRef<number>(0)
+    const lastframetime = useRef<number>(0)
 
     function generateNoise() {
         const canvas = canvasRef.current
@@ -36,16 +36,16 @@ export const TVeffect = () => {
         const animate = (timestamp: number) => {
             const speed = 30
             
-            if (lastFrameTimeRef.current === 0) {
-                lastFrameTimeRef.current = timestamp
+            if (lastframetime.current === 0) {
+                lastframetime.current = timestamp
             }
 
-            const elapsed = timestamp - lastFrameTimeRef.current
+            const elapsed = timestamp - lastframetime.current
             const targetInterval = 1000 / speed
 
             if (elapsed > targetInterval) {
                 generateNoise()
-                lastFrameTimeRef.current = timestamp
+                lastframetime.current = timestamp
             }
 
             requestRef.current = requestAnimationFrame(animate)
@@ -60,8 +60,8 @@ export const TVeffect = () => {
 
     return (
         <>
-            <canvas ref={canvasRef} className="block w-full h-full" />
-            <div className="crt fixed inset-0 pointer-events-none z-10 bg-black/10"></div>
+          <canvas ref={canvasRef} className="block w-full h-full" />
+          <div className="crt fixed inset-0 pointer-events-none z-10 bg-black/10"></div>
         </>
     )
 }

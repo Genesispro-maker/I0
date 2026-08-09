@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Project } from "@/app/types/types"
 import Link from "next/link"
-import { getRelativetime } from "@/app/util/date"
 import Image from "next/image"
 import Skeleton from "./skeleton"
 import { Plus, Search } from "lucide-react"
@@ -69,7 +68,7 @@ export default function ProjectsPage() {
         {Object.entries(groupby).map(([group, project]) => {
           return (
             <div key={group}>
-              <h2 className="text-zinc-300 font-bold">{getRelativetime(group)}</h2>
+              <h2 className="text-zinc-300 font-bold">{group}</h2>
 
               <ul className="flex items-center flex-wrap gap-3 my-3">
                 {project.map((p) => (

@@ -1,18 +1,20 @@
 import clsx from "clsx"
 import { LoaderProps } from "../types/types"
+import { Components } from "react-markdown"
+import { CSSProperties } from "react"
 
 export const FileuploadIcon = (props: React.ComponentProps<"svg">) => {
     return <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
-    <path d="M4 12L4 14.5442C4 17.7892 4 19.4117 4.88607 20.5107C5.06508 20.7327 5.26731 20.9349 5.48933 21.1139C6.58831 22 8.21082 22 11.4558 22C12.1614 22 12.5141 22 12.8372 21.886C12.9044 21.8623 12.9702 21.835 13.0345 21.8043C13.3436 21.6564 13.593 21.407 14.0919 20.9081L18.8284 16.1716C19.4065 15.5935 19.6955 15.3045 19.8478 14.9369C20 14.5694 20 14.1606 20 13.3431V10C20 6.22876 20 4.34315 18.8284 3.17157C17.6569 2 15.7712 2 12 2M13 21.5V21C13 18.1716 13 16.7574 13.8787 15.8787C14.7574 15 16.1716 15 19 15H19.5" />
-    <path d="M10 5C9.41016 4.39316 7.84027 2 7 2C6.15973 2 4.58984 4.39316 4 5M7 3L7 10" />
-    </svg>  
+             <path d="M4 12L4 14.5442C4 17.7892 4 19.4117 4.88607 20.5107C5.06508 20.7327 5.26731 20.9349 5.48933 21.1139C6.58831 22 8.21082 22 11.4558 22C12.1614 22 12.5141 22 12.8372 21.886C12.9044 21.8623 12.9702 21.835 13.0345 21.8043C13.3436 21.6564 13.593 21.407 14.0919 20.9081L18.8284 16.1716C19.4065 15.5935 19.6955 15.3045 19.8478 14.9369C20 14.5694 20 14.1606 20 13.3431V10C20 6.22876 20 4.34315 18.8284 3.17157C17.6569 2 15.7712 2 12 2M13 21.5V21C13 18.1716 13 16.7574 13.8787 15.8787C14.7574 15 16.1716 15 19 15H19.5" />
+             <path d="M10 5C9.41016 4.39316 7.84027 2 7 2C6.15973 2 4.58984 4.39316 4 5M7 3L7 10" />
+           </svg>  
 }
 
 export const V0 = (props: React.ComponentProps<"svg">) => {
-   return <svg {...props} fill="white" viewBox="0 0 147 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="size-10">
-          <path d="M56 50.2031V14H70V60.1562C70 65.5928 65.5928 70 60.1562 70C57.5605 70 54.9982 68.9992 53.1562 67.1573L0 14H19.7969L56 50.2031Z"></path>
-          <path d="M147 56H133V23.9531L100.953 56H133V70H96.6875C85.8144 70 77 61.1856 77 50.3125V14H91V46.1562L123.156 14H91V0H127.312C138.186 0 147 8.81439 147 19.6875V56Z">
-          </path>
+   return <svg style={{ fill: "var(--miscallenous)" } as CSSProperties} {...props} fill="white" viewBox="0 0 147 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="size-10">
+            <path d="M56 50.2031V14H70V60.1562C70 65.5928 65.5928 70 60.1562 70C57.5605 70 54.9982 68.9992 53.1562 67.1573L0 14H19.7969L56 50.2031Z"></path>
+            <path d="M147 56H133V23.9531L100.953 56H133V70H96.6875C85.8144 70 77 61.1856 77 50.3125V14H91V46.1562L123.156 14H91V0H127.312C138.186 0 147 8.81439 147 19.6875V56Z">
+            </path>
           </svg>
 }
 
@@ -64,18 +66,25 @@ export const Loader: React.FC<LoaderProps> = ({ size = 16, color = "gray" }) => 
   );
 };
 
-export function Getfiletype(files: File["type"]){
-     switch(files){
+export function Getfiletype(filetype: File["type"]){
+     switch(filetype){
         case "image/png":
-          return "image"
-          case "video/mp4":
-            return "video"
-            default: 
-            return "invalid file type"
-     }
-  }
-  
-export const id = crypto.randomUUID()
+        case "image/jpeg":
+        case "image/jpg":
+        case "image/webp":
+        case "image/gif":
+        case "image/svg+xml":        
+        return "image"
+
+        case "video/mp4":
+        case "video/quicktime":
+        case "video/webm":  
+        return "video"
+
+        default: 
+        return "invalid file type"
+    }
+}
 
 export function strip(text: string): string {
   return text.replace(/```[a-z]*\n?/gi, "");
@@ -99,24 +108,22 @@ export function parseFiles(raw: string): Record<string, string> {
   }
 
   try {
-    const jsonStr = escapedLines(clean.slice(start, end + 1)); 
-    const parsed = JSON.parse(jsonStr) as Record<string, string>;
+    const jsonstring = escapedLines(clean.slice(start, end + 1)); 
+    const parsed = JSON.parse(jsonstring) as Record<string, string>;
 
     const normalized: Record<string, string> = {};
     for (const [path, content] of Object.entries(parsed)) {
       if (!content || typeof content !== "string") {
-        console.error(`Empty content for ${path}`);
         continue;
       }
       const key = path.replace(/^_\//, "/").replace(/^([^/])/, "/$1");
-      if (key !== path) console.warn(`Normalized path: ${path} → ${key}`);
       normalized[key] = content;
     }
 
     return normalized;
   } catch (error) {
-    console.error("JSON parse failed:", error);
-    console.error("Raw JSON string:", clean.slice(start, Math.min(start + 500, clean.length)));
+    console.error(error);
+    console.error(clean.slice(start, Math.min(start + 500, clean.length)));
     return {};
   }
 }
@@ -168,4 +175,43 @@ function escapedLines(str: string): string {
   }
 
   return result
+}
+
+export const markdown: Components = {
+  h2: ({ children }) => (
+    <h2 className="dark:text-zinc-300 font-semibold text-sm mt-6 mb-2">{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-zinc-300 font-medium text-sm mt-4 mb-1">{children}</h3>
+  ),
+  ol: ({ children }) => (
+    <ol className="flex flex-col list-decimal list-inside">{children}</ol>
+  ),
+  p: ({ children }) => (
+    <p className="dark:text-zinc-300 text-sm leading-relaxed">{children}</p>
+  ),
+  ul: ({ children }) => (
+    <ul className="flex flex-col">{children}</ul>
+  ),
+  li: ({ children }) => (
+    <li className="dark:text-zinc-300 text-sm flex items-start gap-2 my-1">
+      <span className="dark:text-zinc-500 mt-0.5 shrink-0">·</span>
+      <span>{children}</span>
+    </li>
+  ),
+  code: ({ children }) => (
+    <code className="dark:bg-white/5 bg-red-400 border mt-3 mb-2 px-1.5 py-px h-fit dark:border-white/10 dark:text-red-400 rounded-md whitespace-nowrap text-[0.85rem]">{children}</code>
+  ),
+  strong: ({ children }) => (
+    <strong className="text-zinc-200 font-semibold">{children}</strong>
+  ),
+}
+
+export async function Base64(file: File){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (err) => reject(err)
+  })
 }

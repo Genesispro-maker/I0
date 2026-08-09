@@ -2,7 +2,7 @@
 import prisma from "@/app/lib/prisma";
 import { ActionType } from "@/app/types/types";
 import { fromErrortoaction, toActionState } from "@/app/util/error-handler";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs";
 import { encode } from "next-auth/jwt";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

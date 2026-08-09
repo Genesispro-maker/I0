@@ -1,129 +1,126 @@
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useGeneration } from "../store/generation-store"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { subscribe } from "inngest/realtime"
+import { generationchannel } from "@/app/lib/inngest/channel"
 
 type Status = "idle" | "loading" | "unauthorized"
 
-type useStreamType = {
-  submit:  (prompt: string) => Promise<void>
-  status:  Status
-  cancel:  () => void
+type StreamType = {
+  submit: (prompt: string, url: string, imageurls?: string[]) => Promise<void>
+  status: Status
+  cancel: () => void
 }
 
-export function useStream(): useStreamType {
+export function useStream(): StreamType {
   const router = useRouter()
+  const pathname = usePathname()
   const store = useGeneration()
   const storeRef = useRef(store)
   storeRef.current = store
 
   const [status, setStatus] = useState<Status>("idle")
-  const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
+  const subscriptionRef = useRef<Awaited<ReturnType<typeof subscribe>> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      subscriptionRef.current?.close()
+    }
+  }, [])
 
   const cancel = useCallback(() => {
-    readerRef.current?.cancel().catch(() => {})
-    readerRef.current = null
+    subscriptionRef.current?.close()
+    subscriptionRef.current = null
     setStatus("idle")
   }, [])
 
-  const handleStream = useCallback(async (res: Response, metadata?: (projectId: string, messageId: string) => void,) => {
-    if (!res.ok || !res.body) {
-      storeRef.current.setError(res.ok ? "No response body" : `Server error: ${res.status}`)
+  const Stream = useCallback(async (projectId: string, key: string, apiBaseUrl: string | undefined) => {
+    let stream
+    try {
+      stream = await subscribe({
+        channel: generationchannel({ projectId }),
+        topics: ["progress"],
+        key,
+        apiBaseUrl,
+      })
+    } catch (err) {
+      storeRef.current.setError(err instanceof Error ? err.message : "Failed to subscribe")
+      setStatus("idle")
       return
     }
 
-    const reader = res.body.getReader()
-    readerRef.current = reader
-    const decoder = new TextDecoder()
-    let buffer  = ""
+    subscriptionRef.current = stream
+    const reader = stream.getReader()
 
     try {
       while (true) {
-        const { done, value } = await reader.read()
+        const { done, value: message } = await reader.read()
         if (done) break
+        if (message.kind !== "data") continue
 
-        buffer += decoder.decode(value, { stream: true })
-        const parts = buffer.split("\n\n")
-        buffer = parts.pop() ?? ""
+        const { type, data } = message.data as { type: string; data: string }
 
-        for (const part of parts) {
-          if (!part.startsWith("data: ")) continue
-
-          let type: string
-          let data: string
-
-          try {
-            const parsed = JSON.parse(part.slice(6))
-            type = parsed.type
-            data = parsed.data
-          } catch { continue }
-
-          switch (type) {
-            case "metadata": {
-              const { projectId, messageId } = JSON.parse(data)
-              storeRef.current.setMetadata(projectId, messageId)
-              metadata?.(projectId, messageId)
-              break
-            }
-
-            case "reasoning":
-              storeRef.current.appendReasoning(data)
-              break
-
-            case "building": 
-            storeRef.current.status = "building"
+        switch (type) {
+          case "reasoning":
+            storeRef.current.appendReasoning(data)
             break
 
-            case "files":
-            storeRef.current.setFiles(JSON.parse(data) as Array<string>)
+          case "building":
+            storeRef.current.setStatus("building")
             break
 
-            case "code":
-              storeRef.current.appendCode(data)
+          case "summary":
+            storeRef.current.appendSummary(data)
             break
 
-            case "summary":
-              storeRef.current.appendSummary(data)
-              break 
+          case "suggestions":
+            storeRef.current.appendSuggestions(data)
+            break
 
-            case "suggestions":
-              storeRef.current.appendSuggestions(data)
-              break
-              
-            case "done": {
-              const { files } = JSON.parse(data) as { files: Record<string, string> }
-              storeRef.current.setDone(files)
-              return
-            }
-
-            case "error": {
-              storeRef.current.setError(data)
-              return
-            }
+          case "done": {
+            const { files } = JSON.parse(data) as { files: Record<string, string> }
+            storeRef.current.setDone(files)
+            storeRef.current.clearMessages()
+            router.refresh()
+            setStatus("idle")
+            return
           }
+
+          case "error":
+            storeRef.current.setError(data)
+            storeRef.current.clearMessages()
+            setStatus("idle")
+            return
         }
       }
-    } catch (err){
+    } catch (err) {
       storeRef.current.setError(err instanceof Error ? err.message : "Something went wrong")
+      setStatus("idle")
     } finally {
-      await reader.cancel().catch(() => {})
-      readerRef.current = null
+      subscriptionRef.current = null
     }
-  }, [])
+  }, [router])
 
-  const submit = useCallback(async (prompt: string) => {
+  const submit = useCallback(async (prompt: string, url: string, imageurls?: string[]) => {
     const trimmed = prompt.trim()
     if (!trimmed || status === "loading") return
 
+    const isNewchat = !pathname?.startsWith('/features/project/')
+
     setStatus("loading")
     storeRef.current.reset()
+    storeRef.current.setPendingmessage(trimmed, imageurls)
 
     try {
-      const res = await fetch("/api/generate", {
-        method:  "POST",
+      const res = await fetch(url, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ prompt: trimmed }),
+        body: JSON.stringify({
+          prompt: trimmed,
+          images: imageurls,
+        }),
       })
 
       if (res.status === 401) {
@@ -131,18 +128,26 @@ export function useStream(): useStreamType {
         return
       }
 
-      await handleStream(res, (projectId) => {
-        router.push(`/features/project/${projectId}`)
-      })
+      if (!res.ok) {
+        storeRef.current.setError(`Server error: ${res.status}`)
+        setStatus("idle")
+        return
+      }
 
+      const { projectId, messageId, token } = await res.json()
+      storeRef.current.setMetadata(projectId, messageId)
+
+      await Stream(projectId, token.key, token.apiBaseUrl)
+
+      if (isNewchat) {
+        router.push(`/features/project/${projectId}`)
+      }
     } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return
       storeRef.current.setError(err instanceof Error ? err.message : "Something went wrong")
-    } finally {
-      readerRef.current = null
+      storeRef.current.clearMessages()
       setStatus("idle")
     }
-  }, [status, router, handleStream])
+  }, [status, router, pathname, Stream])
 
   return { submit, status, cancel }
 }

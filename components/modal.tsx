@@ -21,11 +21,7 @@ export const Modal = ({ children, onClose }: ModalProps) => {
       <div className="absolute inset-0 bg-[#000000BF] backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       <div className="relative z-10 bg-zinc-900 rounded-lg p-8 max-w-lg w-full shadow-xl border border-white/10" onClick={(e) => e.stopPropagation()}>
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
-          aria-label="Close modal"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 p-1 hover:bg-white/10 rounded-full transition-colors cursor-pointer" aria-label="Close modal">
           <X size={20} />
         </button>
 

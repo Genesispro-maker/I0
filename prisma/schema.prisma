@@ -15,9 +15,9 @@ model User{
   image String?
   createdAt DateTime? @default(now())
   updatedAt DateTime @updatedAt
+  PasswordReset PasswordReset[]
   session Sessions[]
   projects Projects[]
-  likes Like[]
   forks Fork[]
 
   @@index([username])
@@ -33,6 +33,16 @@ model Sessions{
   @@index([userId])
 }
 
+model PasswordReset {
+  id String @id @default(cuid())
+  tokenHash String @unique
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used Boolean @default(false)
+}
+
 model Projects{
   id String @id @default(cuid())
   title String
@@ -42,7 +52,6 @@ model Projects{
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   messages Message[]
-  like Like[]
   forks Fork[] @relation("sourceForks")
   forkOrigin Fork? @relation("forkedFrom")
   status String @default("idle")
@@ -52,28 +61,32 @@ model Projects{
   @@index([createdAt])
 }
 
-// model Image{
-//   id String @id @default(cuid())
-//   messageId String @unique
-//   url String
-//   messages Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+model Image{
+  id String @id @default(cuid())
+  messageId String @unique
+  url String
+  messages Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
-//   @@index([id])
-//   @@index([messageId])
-// }
+  @@index([id])
+  @@index([messageId])
+}
+
 model Message{
   id String @id @default(cuid())
   content String @db.Text
   reasoning String? @db.Text
+  summary String? @db.Text
   role Role
   projectId String
   project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  images Image[]
   createdAt DateTime @default(now())
   updatedAt DateTime? @default(now())
   generations Generations?
 
   @@index([projectId])
 }
+
 model Generations{
   id String @id @default(cuid())
   files Json
@@ -82,24 +95,11 @@ model Generations{
   createdAt DateTime @default(now())
 }
 
-model Like{
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projectId String
-  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@index([projectId])
-  @@unique([projectId, userId])
-  @@index([userId])
-}
-
 model Fork {
   id String @id @default(cuid())
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sourceId String
+  sourceId String @unique
   sourceProject Projects @relation("sourceForks", fields: [sourceId], references: [id], onDelete: Cascade)
   forkedId String @unique
   forkedProject Projects @relation("forkedFrom", fields: [forkedId], references: [id], onDelete: Cascade)

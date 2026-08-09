@@ -1,37 +1,40 @@
 import { FileCollection } from "../types/types";
 import { create } from "zustand"
 
-type Status = "idle" | "thinking" | "done" | "error" | "building"
 interface GenerationState {
-  file: Array<string>
+  pendingprompt: string | null
+  pendingImages: string[] | null
   projectId: string | null,
   messageId: string | null,
   reasoning: string,
-  code: string,
+  name: string,
   files: FileCollection,
   summary: string,
   suggestions: string[],
-  status: Status,
+  status: string,
   error: string | null
 }
+
 interface GenerationAction {
   setMetadata: (projectId: string, messageId: string) => void,
+  setPendingmessage: (prompt: string, images?: string[]) => void
+  clearMessages: () => void
   appendReasoning: (text: string) => void
-  appendCode: (text: string) => void
   appendSummary: (text: string) => void
   appendSuggestions: (text: string) => void
   setDone: (files: FileCollection) => void
   setError: (message: string) => void
-  setFiles: (files: string[]) => void
+  setStatus: (status: string) => void
   reset: () => void
 }
 
 const state: GenerationState = {
-  file: [],
+  name: "",
+  pendingImages: null,
+  pendingprompt: null,
   projectId: null,
   messageId: null,
   reasoning: "",
-  code: "",
   files: {},
   summary: "",
   suggestions: [] as string[],
@@ -42,12 +45,13 @@ const state: GenerationState = {
 export const useGeneration = create<GenerationState & GenerationAction>((set) => ({
   ...state,
 
-  setMetadata: (projectId, messageId) => set({ projectId, messageId, status: "thinking", error: null }),
-  appendReasoning: ((text) => set((prev) => ({reasoning: prev.reasoning + text, status: prev.status === "idle" ? "thinking" : prev.status}))),
-  appendCode: ((text) => set((prev) => ({ code: prev.code + text, status: "building"}))),
-  appendSummary: ((text) => set((prev) => ({ summary: prev.summary + text}))),
+  setMetadata: (projectId, messageId) => set(() => ({ projectId, messageId, })),
+  setPendingmessage: (prompt, images) => set({ pendingprompt: prompt, pendingImages: images }),
+  clearMessages: () => set({ pendingImages: null, pendingprompt: null}),
+  appendReasoning: ((text) => set((prev) => ({ reasoning: prev.reasoning + text }))),
+  appendSummary: ((text) => set((prev) => ({ summary: prev.summary + text }))),
   appendSuggestions: (text: string) => set({ suggestions: JSON.parse(text) }),
-  setFiles: ((file) => set({ file, status: "building" })),
+  setStatus: ((text) => set((prev) => ({ status: prev.status + text }))),
   setDone: (files) => set({ files, status: "done" }),
   setError: (message) => set({ status: "error", error: message }),
   reset: () => set(state)

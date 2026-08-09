@@ -1,6 +1,6 @@
 import { update } from "@/app/actions/user/update"
 import { getAuth } from "@/app/api/query/get-user"
-import { V0 } from "@/app/util/constant"
+import { V0 } from "@/app/util/constants"
 import { EMPTY_ACTION_STATE } from "@/app/util/error-handler"
 import { Dialog } from "@base-ui/react"
 import { X } from "lucide-react"

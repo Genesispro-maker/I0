@@ -171,7 +171,6 @@ export class Git {
 
    async origin({name, description = "", isPrivate = false, branch = "main", files, message = "Initial fking commit",}: Push): Promise<result> {
      const info = await this.create({name, description, isPrivate})
-     await new Promise(r => setTimeout(r, 1000))
      const commit = await this.init(info.owner, info.repo, files, branch, message)
 
      return {

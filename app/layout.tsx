@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./styles/globals.css"
+import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,9 +21,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children,}: Readonly<{ children: React.ReactNode;}>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html suppressHydrationWarning lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="h-screen overflow-hidden">
+        <ThemeProvider storageKey="Theme" attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
+          <Toaster toastOptions={{
+            style: {
+              background: "black",
+              color: "white",
+              height: "40px",
+              borderRadius: "10px",
+              border: "1px solid #3f3f46"
+            }
+          }} />
+        </ThemeProvider>
       </body>
     </html>
   );
