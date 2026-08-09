@@ -7,8 +7,6 @@ import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { useToggle } from "@/app/hooks/use-toggle"
-import { Copy } from "lucide-react"
 
 type Message = Prisma.MessageGetPayload<{
   include: {

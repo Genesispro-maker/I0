@@ -59,9 +59,9 @@ export const TVeffect = () => {
     }, [])
 
     return (
-        <>
+        <section>
           <canvas ref={canvasRef} className="block w-full h-full" />
           <div className="crt fixed inset-0 pointer-events-none z-10 bg-black/10"></div>
-        </>
+        </section>
     )
 }

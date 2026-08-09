@@ -1,4 +1,4 @@
-import { ArrowUp, Plus, Square, X } from "lucide-react"
+import { ArrowUp, Plus, Square } from "lucide-react"
 import { User } from "@/app/types/types"
 import { Getfiletype } from "@/app/util/constants"
 import React, { ChangeEvent, Dispatch, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react"
