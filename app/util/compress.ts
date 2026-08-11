@@ -1,7 +1,7 @@
 export async function compress(data: BufferSource | undefined): Promise<Uint8Array> {
     const cs = new CompressionStream("deflate-raw");
     const writer = cs.writable.getWriter();
-    writer.write(data);
+    writer.write(data as BufferSource);
     writer.close();
     return new Uint8Array(await new Response(cs.readable).arrayBuffer());
 }
@@ -120,9 +120,9 @@ export async function Zip(files: Record<string, Uint8Array | Blob | string>): Pr
         }
 
         const crc = CRC32(rawData);
-        const compressed = await compress(rawData);
+        const compressed = await compress(rawData as BufferSource);
 
-        const localHeader = createLocalHeader(filename, compressed.length, rawData.length, crc, offset);
+        const localHeader = createLocalHeader(filename, compressed.length, rawData.length, crc);
         parts.push(localHeader);
         parts.push(compressed);
 
