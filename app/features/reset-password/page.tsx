@@ -1,11 +1,13 @@
 "use client"
 import { Loader } from "@/app/util/constants";
 import { Lock, Mail } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function ResetPassword(){
+export const dynamic = "force-dynamic"
+
+export default function ResetPassword({ token }: { token?: string }){
     const [state, setState] = useState<{
         email: string
         status: "idle" | "loading" | "success" | "error"
@@ -17,8 +19,6 @@ export default function ResetPassword(){
     })
     const [password, setPassword] = useState<string>("")
     const router = useRouter()
-    const params = useSearchParams()
-    const token = params.get("token") || ''
 
     async function Submit(e: React.ChangeEvent<HTMLFormElement>){
         e.preventDefault()
@@ -62,7 +62,7 @@ export default function ResetPassword(){
         }
     }
 
-    async function reset(e: React.ChangeEvent<HTMLFormElement>, token: string, newPassword: string): Promise<void>{
+    async function reset(e: React.ChangeEvent<HTMLFormElement>, newPassword: string, token?: string): Promise<void>{
         setState({
             ...state, 
             status: "loading"
@@ -122,7 +122,7 @@ export default function ResetPassword(){
                 </section>
             ) : (
                 <section>
-                    <form className="flex flex-col gap-2" onSubmit={(e) => reset(e, token, password)}>
+                    <form className="flex flex-col gap-2" onSubmit={(e) => reset(e, password, token)}>
                         <label htmlFor="password" className="flex gap-1 items-center text-zinc-300"><Lock aria-hidden={true} size={17} color="lightgray" /> Password: </label>
                         <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" name="password" autoFocus aria-label="Password Input" className="border focus-within:outline focus-within:outline-zinc-800 border-zinc-800 rounded-md p-1" placeholder="Password..."/>
                         <button type="submit" className="w-fit p-1 bg-white text-black rounded-md hover:cursor-pointer hover:bg-zinc-300 border-2 border-zinc-800">Change Password</button>
