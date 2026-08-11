@@ -123,7 +123,7 @@ export const ProjectHeader = ({ project, rename, setRename }: Prop) => {
 }
 
 function ProjectMenu<T>({ project, onRename, onDelete }: {
-  project: Projects
+  project: Pick<Projects, "id" | "title">
   onRename: () => void
   onDelete: (id: string) => Promise<T>
 }) {
