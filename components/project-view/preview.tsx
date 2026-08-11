@@ -16,9 +16,9 @@ import { Zip } from "@/app/util/compress";
 }
 
 function Filedownload({ className, filename }: { filename: string } & React.ComponentProps<"button">){
-  const { sandpack } = useSandpack()
+ const { sandpack } = useSandpack()
 
-  const files = sandpack.files
+ const files = Object.fromEntries(Object.entries(sandpack.files).map(([path, file]) => [path, file.code]))
 
   async function download(){
     const zip = await Zip(files)
