@@ -1,8 +1,10 @@
 import prisma from "@/app/lib/prisma"
 import { getAuth } from "../query/get-user"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
-export async function GET() {
+export async function GET(req: NextRequest){
+  const search =  req.nextUrl.searchParams.get("search") ?? ''
+
   const user = await getAuth()
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, {
@@ -13,7 +15,13 @@ export async function GET() {
   try {
     const projects = await prisma.projects.findMany({
       where: {
-        userId: user.id
+        userId: user.id,
+        ...(search && {
+          title: {
+            contains: search,
+            mode: "insensitive" as const
+          }
+        })
     },
       orderBy: {
         createdAt: "desc"
@@ -22,6 +30,13 @@ export async function GET() {
       id: true,
       title: true,
       createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          image: true,
+          username: true
+        }
+      }
     }
 })
     return NextResponse.json({ projects })

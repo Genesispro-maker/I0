@@ -65,3 +65,54 @@ export const TVeffect = () => {
         </section>
     )
 }
+
+// import { useEffect, useRef, useState } from "react"
+// import { loadSandpackClient } from "@codesandbox/sandpack-client"
+
+// export const UltraLowLevelPreview = () => {
+//   const iframeRef = useRef<HTMLIFrameElement>(null)
+//   const [customLoading, setCustomLoading] = useState(true)
+
+//   useEffect(() => {
+//     if (!iframeRef.current) return
+
+//     let client: any
+
+//     const initClient = async () => {
+//       // Direct raw creation via node_modules binaries
+//       client = await loadSandpackClient(iframeRef.current!, {
+//         files: {
+//           "/index.js": { code: `console.log("Hello Low Level World")` }
+//         },
+//         template: "vanilla",
+//       })
+
+//       // Hook directly into the bridge messaging layer
+//       client.listen((message: any) => {
+//         if (message.type === "start") {
+//           setCustomLoading(true)
+//         }
+//         if (message.type === "done") {
+//           setCustomLoading(false) // Bundler finished compilation cycle smoothly
+//         }
+//       })
+//     }
+
+//     initClient()
+
+//     return () => {
+//       client?.destroy() // Gracefully unmount iframe references
+//     }
+//   }, [])
+
+//   return (
+//     <div className="relative w-full h-full min-h-[400px]">
+//       {customLoading && (
+//         <div className="absolute inset-0 bg-black flex items-center justify-center text-white text-xs font-mono">
+//           [CUSTOM NODE-MODULE LOADER BUNDLING...]
+//         </div>
+//       )}
+//       <iframe ref={iframeRef} className="w-full h-full border-0" />
+//     </div>
+//   )
+// }

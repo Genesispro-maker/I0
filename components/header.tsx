@@ -1,5 +1,5 @@
 "use client"
-import { V0 } from "@/app/util/constants"
+import { I0 } from "@/app/util/constants"
 import Link from "next/link"
 import { Auth } from "./auth/auth"
 import { useState } from "react"
@@ -12,7 +12,7 @@ export const Header = () => {
    return (
       <nav className="bg-transparent flex py-0.5 px-1 mx-2.5 justify-between items-center relative">
           <Link href={"/"}>
-            <V0 />
+            <I0 />
           </Link>
             <div className="flex gap-2">
               <button onClick={() => {

@@ -55,6 +55,8 @@ export const generateUI = inngest.createFunction(
                 })
             })
 
+            await step.sleep("delay-stream", "2s");
+
             const iterating = Boolean(file && Object.keys(file).length > 0 && reasoning)
 
             const userprompt = iterating ? `Previous files:\n${JSON.stringify(file, null, 2)}\n\nPrevious reasoning:\n${reasoning}\n\nUser request:\n${prompt}` : `Build this UI ${prompt}`
@@ -142,7 +144,7 @@ export const generateUI = inngest.createFunction(
                                 const jsonindex = buffers.raw.indexOf("{")
 
                                 if(index === -1 && jsonindex === -1){
-                                    buffers.raw = buffers.raw.slice(Math.max(0, buffers.raw.length - tags.THINK_OPEN.length))
+                                    // buffers.raw = buffers.raw.slice(Math.max(0, buffers.raw.length - tags.THINK_OPEN.length))
                                     return
                                 }
 
@@ -177,14 +179,6 @@ export const generateUI = inngest.createFunction(
                                 thinkingDone = true
                                 thinking = false
                                 buffers.raw = buffers.raw.slice(index + tags.THINK_CLOSE.length)
-                                await prisma.projects.update({
-                                    where: {
-                                        id: projectId,
-                                    },
-                                    data: {
-                                        status: "building"
-                                    }
-                                })
 
                                 await send("building", "processing")
                             }
@@ -368,7 +362,7 @@ export const generateUI = inngest.createFunction(
               
 
             await send("suggestions", JSON.stringify(suggestions))
-            await send("done", JSON.stringify({ files }))
+            await send("done", JSON.stringify({ merged   }))
 
             return {
                 files,

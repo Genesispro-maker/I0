@@ -1,3 +1,4 @@
+import { getAuth } from "@/app/api/query/get-user"
 import prisma from "@/app/lib/prisma"
 import { ProjectEditor } from "@/components/project-view/project-view"
 import { notFound } from "next/navigation"
@@ -22,15 +23,16 @@ export async function generateMetadata({params,}: {params: Promise<{ projectId: 
 
 export default async function Projectpage({params,}: {params: Promise<{ projectId: string }>}){
     const { projectId } = await params
+    const user = await getAuth()
 
     const project = await prisma.projects.findUnique({
         where: {
             id: projectId,
+            userId: user?.id
         },
         select: {
            id: true,
            title: true,
-           visiblity: true,
            messages: {
             select: {
                 id: true,
@@ -56,6 +58,6 @@ export default async function Projectpage({params,}: {params: Promise<{ projectI
     }
 
     return (
-          <ProjectEditor project={project} />
+     <ProjectEditor project={project} user={user} />
     )
 }

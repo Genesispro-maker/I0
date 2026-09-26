@@ -37,7 +37,7 @@ export async function POST(req: Request){
             role: "USER",
             content: prompt,
             images: {
-              create: (body.images ?? []).map((url) => ({
+              create: (body.images || []).map((url) => ({
                 url
               }))
             }
@@ -52,7 +52,11 @@ export async function POST(req: Request){
     },
 
     include: {
-      messages: true
+      messages: {
+        include: {
+          images: true
+        }
+      }
     }
   })
 

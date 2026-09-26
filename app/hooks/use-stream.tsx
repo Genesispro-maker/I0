@@ -97,6 +97,7 @@ export function useStream(): StreamType {
       storeRef.current.setError(err instanceof Error ? err.message : "Something went wrong")
       setStatus("idle")
     } finally {
+      subscriptionRef.current?.close() 
       subscriptionRef.current = null
     }
   }, [router])
@@ -106,7 +107,6 @@ export function useStream(): StreamType {
     if (!trimmed || status === "loading") return
 
     const isNewchat = !pathname?.startsWith('/features/project/')
-
     setStatus("loading")
     storeRef.current.reset()
     storeRef.current.setPendingmessage(trimmed, imageurls)
@@ -123,13 +123,13 @@ export function useStream(): StreamType {
         }),
       })
 
-      if (res.status === 401) {
+      if(res.status === 401) {
         setStatus("unauthorized")
         return
       }
 
       if (!res.ok) {
-        storeRef.current.setError(`Server error: ${res.status}`)
+        storeRef.current.setError(`error: ${res.status}`)
         setStatus("idle")
         return
       }
@@ -137,11 +137,11 @@ export function useStream(): StreamType {
       const { projectId, messageId, token } = await res.json()
       storeRef.current.setMetadata(projectId, messageId)
 
-      await Stream(projectId, token.key, token.apiBaseUrl)
-
       if (isNewchat) {
         router.push(`/features/project/${projectId}`)
       }
+
+      await Stream(projectId, token.key, token.apiBaseUrl)
     } catch (err) {
       storeRef.current.setError(err instanceof Error ? err.message : "Something went wrong")
       storeRef.current.clearMessages()
@@ -149,5 +149,9 @@ export function useStream(): StreamType {
     }
   }, [status, router, pathname, Stream])
 
-  return { submit, status, cancel }
+  return {
+    submit,
+    status,
+    cancel
+  }
 }

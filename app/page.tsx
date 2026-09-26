@@ -2,6 +2,8 @@ import { getAuth } from "./api/query/get-user"
 import { Header } from "@/components/header"
 import Home from "@/components/home"
 
+export const revalidate = 60
+
 export const generateMetadata = async () => {
   const user = await getAuth()
 

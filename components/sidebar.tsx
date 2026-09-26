@@ -1,11 +1,10 @@
 "use client"
 import { Project, User } from "@/app/types/types"
-import { Loader, V0 } from "@/app/util/constants"
-import { signinpath } from "@/app/util/path"
+import { Loader, I0 } from "@/app/util/constants"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import clsx from "clsx"
-import { ChevronRight, Ellipsis, List, Settings, Trash2, UserRound } from "lucide-react"
+import { ChevronRight, Ellipsis, List, Trash2, UserRound } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Menu } from "@base-ui/react"
@@ -16,7 +15,7 @@ import { toast } from "sonner"
 import { ThemeToggle } from "./theme-toggle"
 import { useToggle } from "@/app/hooks/use-toggle"
 
-export function Sidebar({ isOpen, user }: { isOpen: boolean; user: User | null }) {
+export function Sidebar({ isOpen, user }:{ isOpen: boolean; user: User | null }) {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(false)
   const [toggle, handleToggle] = useToggle(false)
@@ -31,10 +30,7 @@ export function Sidebar({ isOpen, user }: { isOpen: boolean; user: User | null }
         "Content-Type": "application/json"
       }
     }).then(res => {
-        if (!navigator.onLine) return null
-
         if (res.status === 401) {
-          router.push(signinpath()); 
           return null
         }
         
@@ -60,14 +56,14 @@ export function Sidebar({ isOpen, user }: { isOpen: boolean; user: User | null }
       isOpen ? "w-60 opacity-100" : "w-0 opacity-0 pointer-events-none")}>
 
       <div className="w-56 px-1 mb-4">
-        <V0 />
+        <I0 />
       </div>
 
       <div className="w-56 flex flex-col flex-1 min-h-0">
         <div className="px-1 mt-1 shrink-0 flex flex-col gap-1.5">
-          <button onClick={() => router.push("/features/chats")} className="flex items-center gap-2.5 w-full px-2 py-1 hover:cursor-pointer rounded-md hover:bg-zinc-300 hover:text-black dark:hover:bg-zinc-800  transition-colors">
+          <button onClick={() => router.push("/features/chats")} className="flex items-center gap-2.5 w-full px-2 py-1 hover:cursor-pointer rounded-md hover:bg-zinc-300 hover:text-black dark:hover:bg-zinc-800 dark:hover:text-white  transition-colors">
             <List size={18} />
-            Chats
+             Chats
           </button>
         </div>
 
@@ -90,7 +86,7 @@ export function Sidebar({ isOpen, user }: { isOpen: boolean; user: User | null }
               ) : (
                 <div>
                   {projects.map(p => (
-                    <div key={p.id} className="flex items-center rounded-md hover:bg-zinc-300 justify-between group transition-colors">
+                    <div key={p.id} className="flex items-center rounded-md dark:hover:bg-zinc-800 hover:bg-zinc-300 justify-between group transition-colors">
                       <Link href={`/features/project/${p.id}`} className="text-[0.9rem] flex min-w-0 flex-1 px-2 py-1.5 transition-colors">
                        <span className="truncate">{p.title}</span>
                       </Link>
@@ -129,7 +125,7 @@ export function Sidebar({ isOpen, user }: { isOpen: boolean; user: User | null }
         <Menu.Root>
           <Menu.Trigger className="w-full select-none flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-800 hover:text-black hover:dark:text-white cursor-pointer transition-colors group">
             {user?.image ? <Image className="rounded-full ring-1 ring-white/10" src={user?.image ?? ""} alt={user?.username ?? ""} width={26} height={26} /> : <p className="w-7 font-bold border border-zinc-300 dark:border-zinc-800 bg-zinc-400 dark:bg-zinc-600 dark:text-black rounded-full">{user?.username?.slice(0, 1).toUpperCase()}</p>}
-            <span className="text-[14px] group-hover:text-black group-hover:dark:text-zinc-300 font-semibold transition-colors truncate">
+            <span className="text-[14px] tracking-wide group-hover:text-black group-hover:dark:text-zinc-300 font-semibold transition-colors truncate">
               {user?.username}
             </span>
          </Menu.Trigger>
@@ -146,7 +142,6 @@ export function Sidebar({ isOpen, user }: { isOpen: boolean; user: User | null }
                     <Menu.Item onClick={() => {
                       router.push(`/features/profile`)
                     }} className="dark:hover:bg-zinc-800 hover:bg-zinc-300 rounded-sm w-full p-1 hover:cursor-pointer flex gap-2 items-center text-sm"><UserRound size={19} /> Profile</Menu.Item>
-                    <Menu.Item className="dark:hover:bg-zinc-800 hover:bg-zinc-300 rounded-sm w-full p-1 hover:cursor-pointer flex gap-2 items-center text-sm"><Settings size={19} /> Settings</Menu.Item>
                   </div>
 
                 <Menu.Separator className="h-px w-full bg-zinc-400 dark:bg-zinc-800" />

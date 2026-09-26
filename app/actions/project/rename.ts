@@ -44,7 +44,7 @@ export async function Rename(projectId: string, title: string): Promise<{ status
             status: "success",
             message: "Title Updated",
         }
-    } catch(err: unknown){
+    } catch{
         return {
             status: "success",
             message: "Something went wrong", 

@@ -44,14 +44,13 @@ const state: GenerationState = {
 
 export const useGeneration = create<GenerationState & GenerationAction>((set) => ({
   ...state,
-
   setMetadata: (projectId, messageId) => set(() => ({ projectId, messageId, })),
   setPendingmessage: (prompt, images) => set({ pendingprompt: prompt, pendingImages: images }),
   clearMessages: () => set({ pendingImages: null, pendingprompt: null}),
   appendReasoning: ((text) => set((prev) => ({ reasoning: prev.reasoning + text }))),
   appendSummary: ((text) => set((prev) => ({ summary: prev.summary + text }))),
   appendSuggestions: (text: string) => set({ suggestions: JSON.parse(text) }),
-  setStatus: ((text) => set((prev) => ({ status: prev.status + text }))),
+  setStatus: ((status) => ({ status })),
   setDone: (files) => set({ files, status: "done" }),
   setError: (message) => set({ status: "error", error: message }),
   reset: () => set(state)

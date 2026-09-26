@@ -1,17 +1,21 @@
 "use client"
 import { Loginaction } from "@/app/actions/auth/login"
 import { EMPTY_ACTION_STATE } from "@/app/util/error-handler"
-import { Dispatch, useActionState, useState, useRef, useEffect } from "react"
-import { Github, Loader, V0 } from "@/app/util/constants"
+import { Dispatch, useActionState, useState, useRef, useEffect, useTransition } from "react"
+import { Github, Loader, I0 } from "@/app/util/constants"
 import { Dialog } from '@base-ui/react/dialog';
 import { FieldError } from "../field-error"
-import { ArrowRight, X } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, X } from "lucide-react"
 import { Signup } from "@/app/actions/auth/sign-up"
 import { signIn } from "next-auth/react"
+import { useActionFeedback } from "@/app/hooks/use-action-feedback"
+import { toast } from "sonner"
 
 export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, setOpen: Dispatch<boolean>, mode: "login" | "signup", onChangeMode: (mode: "login" | "signup") => void}) {
     const [actionState, action] = useActionState(mode === "login" ? Loginaction : Signup, EMPTY_ACTION_STATE)
     const [loading, setLoading] = useState<boolean>(false)
+    const [show, setShow] = useState(false)
+    const [isPending, startTransition] = useTransition()
     const formRef = useRef<HTMLFormElement | null>(null)
     const [values, setValues] = useState<{
       email: string
@@ -21,6 +25,16 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
       email: "",
       password: '',
       confirmPassword: ''
+    })
+
+    useActionFeedback(actionState, {
+      onSuccess: ({ actionState }) => {
+        toast.success(actionState.message)
+      },
+
+      onError: ({ actionState }) => {
+        toast.error(actionState.message)
+      }
     })
 
     useEffect(() => {
@@ -54,7 +68,7 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
              <div className="flex flex-col gap-3">
                <div className="flex flex-col gap-2 mb-4">
                  <div className="flex justify-between items-center">
-                   <V0 />
+                   <I0 />
                    <Dialog.Close className="hover:cursor-pointer">
                     <X className="hover:stroke-zinc-400 transition-all duration-100 ease-in-out" color="gray" size={19}/>
                    </Dialog.Close>
@@ -78,20 +92,30 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
                  <hr className="flex-1 border-t border-zinc-300 dark:border-zinc-700" />
                </div>
 
-               <form action={action} className="flex flex-col gap-5">
+               <form action={(formdata: FormData) => {
+                 startTransition(async () => {
+                  action(formdata)
+                  setValues({
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                  })
+                 })
+               }} className="flex flex-col gap-5">
                 <div>
                   <input value={values.email} onChange={(e) => setValues({
                     ...values,
                     email: e.target.value
-                  })} placeholder="Email" type="email" name="email" className="w-full px-3 py-1 rounded-md outline outline-zinc-800 hover:outline hover:outline-zinc-700" />
+                  })} required placeholder="Email" type="email" name="email" className="w-full px-3 py-1 rounded-md outline outline-zinc-800 hover:outline hover:outline-zinc-700" />
                   <FieldError actionState={actionState} name="email" />
                 </div>
 
-                <div>
+                <div className="relative">
                   <input value={values.password} onChange={(e) => setValues({
                     ...values,
                     password: e.target.value
-                  })} placeholder="Password" type="password" name="password" className="w-full px-3 py-1 rounded-md outline outline-zinc-800 hover:outline hover:outline-zinc-700" />
+                  })} required placeholder="Password" type={show ? "text" : "password"} name="password" className="w-full px-3 py-1 rounded-md outline outline-zinc-800 hover:outline hover:outline-zinc-700" />
+                  <button onClick={() => setShow((prev) => !prev)} type="button" className="absolute top-2.5 right-2">{show ? <Eye size={15} /> : <EyeOff size={15} />}</button>
                   <FieldError actionState={actionState} name="password" />
                 </div>
 
@@ -105,7 +129,7 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
                   </div>
                 )}
 
-                <button type="submit" className="flex w-full bg-white text-black border-[0.5px] border-zinc-300 dark:border-zinc-800 py-1 rounded-md hover:cursor-pointer justify-center items-center hover:bg-zinc-200 gap-3"><ArrowRight size={18} /> {submitText}</button>
+                <button type="submit" className="flex w-full bg-white text-black border-[0.5px] border-zinc-300 dark:border-zinc-800 py-1 rounded-md hover:cursor-pointer justify-center items-center hover:bg-zinc-200 gap-3">{isPending ? <Loader /> : <><ArrowRight size={18} /> {submitText}</>}</button>
                 
                 <div className="flex justify-center gap-1 text-sm">
                   <span>{alttext}</span>

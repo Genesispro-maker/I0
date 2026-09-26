@@ -5,7 +5,7 @@ import { RefObject, useEffect, useMemo } from "react";
 import { Download } from "lucide-react";
 import { Zip } from "@/app/util/compress";
 
- function Hash(str: string): string {
+  function Hash(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
@@ -56,16 +56,17 @@ export function Preview({ files, id, filesRef, filename }: { files: Record<strin
      <SandpackProvider key={key} style={{height: "100%"}} template="react-ts" files={files} customSetup={{
            dependencies: {
              "lucide-react": "latest",
-             "react-router-dom": "latest",
+             "react-router-dom": "latest", 
              "react-query": "latest",
+             "framer-motion": "latest"
            }
          }} options={{
            activeFile: "/App.tsx",
            visibleFiles: Object.keys(files) as string[],
            externalResources: ["https://cdn.tailwindcss.com"],
          }} theme="dark">
-         <SandpackLayout className="relative" style={{ height: "100%" }}>
-          <Filedownload filename={filename} className="fixed text-black hover:bg-zinc-300  p-1 top-3.75 z-1000 right-22 hover:cursor-pointer rounded-lg dark:hover:bg-zinc-800 w-fit" />
+         <SandpackLayout style={{ height: "100%", }}>
+          <Filedownload filename={filename} className="fixed top-2.5 right-6 text-black dark:text-zinc-300 dark:hover:bg-zinc-800 hover:bg-zinc-300 p-1 z-50 hover:cursor-pointer rounded-lg w-fit" />
            <Tabs.Panel keepMounted value="preview" className="w-full">
               <Mechanic messageId={id} />
               <SandpackPreview showNavigator={true} showRefreshButton={false} showOpenInCodeSandbox={false} style={{ height: "100%" }} />

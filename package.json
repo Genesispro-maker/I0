@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "validate": "npm run lint && npm run type-check",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -17,7 +19,6 @@
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
-    "figma-api": "^2.2.0-beta",
     "inngest": "^4.11.0",
     "lucide-react": "^1.22.0",
     "next": "16.2.4",
@@ -31,7 +32,6 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
-    "uploadthing": "^7.7.4",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
   },

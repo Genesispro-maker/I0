@@ -11,6 +11,17 @@
   --animate-collapsible-close: collapsible-close 150ms ease-in;
 }
 
+@layer base {
+  button {
+    cursor: default;
+    transition: color 300ms;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 ::selection {
   background-color: #032042;
   color: #6da7ec;
@@ -19,6 +30,8 @@
 :root, :root.dark {
   --bg-color-dark-default: black;
   --text-color-dark: #ffffff;
+
+  --matrix-bg-color: #2f3336;
 
   --miscallenous: white;
   
@@ -29,6 +42,8 @@
 :root.light {
   --bg-color-light-default: white;
   --text-color-light: #000000;
+
+   --matrix-bg-color: black;
 
   --miscallenous: black;
 
@@ -50,7 +65,7 @@ body {
   position: relative;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .panel::-webkit-scrollbar{
@@ -92,30 +107,6 @@ body {
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
-}
-
-.thinking{
-  color: rgba(255, 255, 255, 0.1);
-  background: -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff));
-  background: gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff));
-	-webkit-background-size: 125px 100%;
-	-moz-background-size: 125px 100%;
-	background-size: 125px 100%;
-	-webkit-background-clip: text;
-	-moz-background-clip: text;
-	background-clip: text;
-	-webkit-animation-name: shimmer;
-	-moz-animation-name: shimmer;
-	animation-name: shimmer;
-	-webkit-animation-duration: 2s;
-	-moz-animation-duration: 2s;
-	animation-duration: 2s;
-	-webkit-animation-iteration-count: infinite;
-	-moz-animation-iteration-count: infinite;
-	animation-iteration-count: infinite;
-	background-repeat: no-repeat;
-	background-position: 0 0;
-	background-color: #222;
 }
 
 .loader-spinner {

@@ -4,7 +4,7 @@ import { inngest } from "@/app/lib/inngest/client"
 import { getSubscriptionToken } from "inngest/realtime"
 import { generationchannel } from "@/app/lib/inngest/channel"
 
-export async function POST(req: Request, { params,}: {params: Promise<{projectId: string}>}){
+export async function POST(req: Request, { params,}: { params: Promise<{projectId: string}> }){
   const { projectId } = await params
 
   const user = await getAuth()
@@ -25,7 +25,8 @@ export async function POST(req: Request, { params,}: {params: Promise<{projectId
     })
   }
 
-  const project = await prisma.projects.findUniqueOrThrow({
+  try {
+    const project = await prisma.projects.findUniqueOrThrow({
       where: {
         id: projectId,
       },
@@ -86,4 +87,10 @@ export async function POST(req: Request, { params,}: {params: Promise<{projectId
       messageId: assitantmessage.id,
       token
     })
+  } catch {
+    return Response.json({
+      error: "Something went wrong",
+      status: 500,
+    })
+  }
 }

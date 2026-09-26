@@ -1,7 +1,6 @@
 import clsx from "clsx"
 import { LoaderProps } from "../types/types"
 import { Components } from "react-markdown"
-import { CSSProperties } from "react"
 
 export const FileuploadIcon = (props: React.ComponentProps<"svg">) => {
     return <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
@@ -10,11 +9,10 @@ export const FileuploadIcon = (props: React.ComponentProps<"svg">) => {
            </svg>  
 }
 
-export const V0 = (props: React.ComponentProps<"svg">) => {
-   return <svg style={{ fill: "var(--miscallenous)" } as CSSProperties} {...props} fill="white" viewBox="0 0 147 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="size-10">
-            <path d="M56 50.2031V14H70V60.1562C70 65.5928 65.5928 70 60.1562 70C57.5605 70 54.9982 68.9992 53.1562 67.1573L0 14H19.7969L56 50.2031Z"></path>
-            <path d="M147 56H133V23.9531L100.953 56H133V70H96.6875C85.8144 70 77 61.1856 77 50.3125V14H91V46.1562L123.156 14H91V0H127.312C138.186 0 147 8.81439 147 19.6875V56Z">
-            </path>
+export const I0 = (props: React.ComponentProps<"svg">) => {
+   return <svg className="size-8 fill-(--miscallenous)" viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" {...props}>
+            <path d="M38 0H58L26.68 57.7C20 70 20 70 6 70H0V70L38 0Z" />
+            <path d="M140 56H126V23.9531L93.953 56H126V70H89.6875C78.8144 70 70 61.1856 70 50.3125V14H84V46.1562L116.156 14H84V0H120.312C131.186 0 140 8.81439 140 19.6875V56Z" />
           </svg>
 }
 
@@ -113,7 +111,7 @@ export function parseFiles(raw: string): Record<string, string> {
 
     const normalized: Record<string, string> = {};
     for (const [path, content] of Object.entries(parsed)) {
-      if (!content || typeof content !== "string") {
+      if (!content || typeof content !== "string"){
         continue;
       }
       const key = path.replace(/^_\//, "/").replace(/^([^/])/, "/$1");
@@ -194,16 +192,16 @@ export const markdown: Components = {
     <ul className="flex flex-col">{children}</ul>
   ),
   li: ({ children }) => (
-    <li className="dark:text-zinc-300 text-sm flex items-start gap-2 my-1">
+    <li className="dark:text-zinc-300 text-black text-sm flex items-start gap-2 my-1">
       <span className="dark:text-zinc-500 mt-0.5 shrink-0">·</span>
       <span>{children}</span>
     </li>
   ),
   code: ({ children }) => (
-    <code className="dark:bg-white/5 bg-red-400 border mt-3 mb-2 px-1.5 py-px h-fit dark:border-white/10 dark:text-red-400 rounded-md whitespace-nowrap text-[0.85rem]">{children}</code>
+    <code className="font-bold dark:text-zinc-300 text-black text-sm">{children}</code>
   ),
   strong: ({ children }) => (
-    <strong className="text-zinc-200 font-semibold">{children}</strong>
+    <strong className="dark:text-zinc-200 font-semibold">{children}</strong>
   ),
 }
 

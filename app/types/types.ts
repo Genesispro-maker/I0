@@ -38,7 +38,8 @@ export interface User {
 export type Project = {
   id: string
   title: string
-  createdAt: string
+  createdAt: Date
+  updatedAt: string
   user: {
     username: string | null,
     image: string | null

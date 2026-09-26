@@ -44,7 +44,7 @@ export async function Delete(id: string): Promise<{status: "success" | "error", 
         code: 200,
     }
 
-   }catch(err){
+   }catch{
      return {
         status: "error",
         code: 500

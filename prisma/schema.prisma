@@ -18,7 +18,6 @@ model User{
   PasswordReset PasswordReset[]
   session Sessions[]
   projects Projects[]
-  forks Fork[]
 
   @@index([username])
   @@index([email])
@@ -46,18 +45,14 @@ model PasswordReset {
 model Projects{
   id String @id @default(cuid())
   title String
-  visiblity Visiblity @default(PRIVATE)
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   messages Message[]
-  forks Fork[] @relation("sourceForks")
-  forkOrigin Fork? @relation("forkedFrom")
   status String @default("idle")
 
   @@index([userId])
-  @@index([visiblity])
   @@index([createdAt])
 }
 
@@ -93,25 +88,6 @@ model Generations{
   messageId String @unique
   message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-}
-
-model Fork {
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sourceId String @unique
-  sourceProject Projects @relation("sourceForks", fields: [sourceId], references: [id], onDelete: Cascade)
-  forkedId String @unique
-  forkedProject Projects @relation("forkedFrom", fields: [forkedId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-  @@index([sourceId])
-}
-
-enum Visiblity {
-  PRIVATE
-  PUBLIC
 }
 
 enum Role {
