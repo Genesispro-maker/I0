@@ -11,7 +11,6 @@ I/O is an advanced, real-time AI code generation platform built to turn text pro
 
 * **Resilient Event Architecture:** Migrated from low-level, Server-Sent Events (SSE) to **Inngest** to orchestrate resilient, distributed background jobs for step-by-step code generation.
 * **Concurrency & Rate Limit Control:** Configured Inngest queues with exponential **back-offs, automated retries, and strict concurrency limits** to seamlessly manage upstream LLM rate-throttling (Gemini AI).
-* **Automated Git Workflows:** Built an automated version control bridge using the **GitHub REST API** allowing users to deploy generated UI code directly to a new repository in a single click.
 * **Type-Safe Data Layer:** Designed a robust PostgreSQL database schema using **Prisma ORM** coupled with **Supabase** for secure object storage.
 * **Custom Security Infrastructure:** Rolled out a secure authentication extension including a password reset workflow driven by **Nodemailer** and secure, cryptographically random verification tokens generated via Node's `crypto.randomBytes`.
 
