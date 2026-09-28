@@ -2,15 +2,14 @@
 export const dynamic = "force-dynamic";
 
 import { Fragment, useEffect, useMemo, useState } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Project } from "@/app/types/types"
 import Link from "next/link"
 import Skeleton from "./skeleton"
 import { Plus, Search } from "lucide-react"
 import { useDebounce } from "@/app/hooks/use-debounce"
 
-export default function ProjectsPage() {
-  const searchParams = useSearchParams()
+export default function ProjectsPage({ searchParams,} : { searchParams: Promise<{[key: string]: string[] | null | undefined}> }) {
   const [projects, setProjects] = useState<Project[]>([])
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "unauthorized">("idle")
   const [search, setSearch] = useState<string>("")
