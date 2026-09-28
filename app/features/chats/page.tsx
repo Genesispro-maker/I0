@@ -1,5 +1,7 @@
 "use client"
-import { Fragment, useEffect, useState } from "react"
+export const dynamic = "force-dynamic";
+
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Project } from "@/app/types/types"
 import Link from "next/link"
@@ -52,17 +54,19 @@ export default function ProjectsPage() {
       }).catch(() => setStatus("error"))
   }, [router, searchParams, value])
 
-  const groupby = projects.reduce((acc, pro) => {
-     const group = pro[key];
-     const keystr = String(group).split("T")[0]
-  
-    if (!acc[keystr]) {
-      acc[keystr] = [];
-    }
-  
-    acc[keystr].push(pro);
-    return acc;
-  }, {} as Record<string, Project[]>);
+  const groupby = useMemo(() => {
+    return projects.reduce((acc, pro) => {
+      const group = pro[key]
+      const keystr = String(group).split("T")[0]
+
+      if(!acc[keystr]){
+        acc[keystr] = []
+      }
+
+      acc[keystr].push(pro)
+      return acc;
+    }, {} as Record<string, Project[]>)
+  }, [projects])
 
   if(status === "loading") return <Skeleton />
 
@@ -70,27 +74,26 @@ export default function ProjectsPage() {
     <main className="p-4">
       <div className="flex justify-between">
         <h1 className="text-xl font-bold">Chats</h1>
-        <button onClick={() => router.push("/")} className="flex gap-2 items-center border rounded-lg px-3 hover:bg-zinc-950 py-1 border-zinc-800 hover:cursor-pointer text-zinc-200">
+        <button onClick={() => router.push("/")} className="flex gap-2 items-center border rounded-lg px-3 dark:hover:bg-zinc-950 py-1 border-zinc-400 hover:bg-zinc-300 dark:border-zinc-800 hover:cursor-pointer dark:text-zinc-200">
           Create <Plus size={20} />
         </button>
       </div>
 
-      <div className="flex my-2 items-center gap-2.5 border w-full max-w-2xl p-1 rounded-md border-zinc-800 focus-within:outline focus-within:outline-zinc-800">
+      <div className="flex my-2 items-center border-zinc-400 gap-2.5 border w-full max-w-2xl p-1 rounded-md dark:border-zinc-800 focus-within:outline focus-within:outline-zinc-300 dark:focus-within:outline-zinc-800">
         <Search size={20} color="gray" />
         <input value={search} onChange={(e) => setSearch(e.target.value)} className="focus:outline-none w-full bg-transparent" type="text"
           placeholder="search projects..." />
       </div>
 
       <div className="p-5">
-        {projects.length === 0 && status === "idle" && (
-          <p className="text-zinc-400 text-center my-8">
+        {/* {projects.length === 0 && status === "idle" && (
+          <p className="dark:text-zinc-400 text-center my-8">
             No projects found matching &quot;{search}&quot;
           </p>
-        )}
-    
+        )} */}
         <table className="w-full">
-          <thead className="font-medium border-b dark:border-zinc-800 tracking-wider dark:text-zinc-300 text-xs">
-            <tr className="flex justify-between">
+          <thead className="font-medium border-b border-zinc-400 dark:border-zinc-800 tracking-wider dark:text-zinc-300 text-xs">
+            <tr className="flex text-zinc-800 justify-between">
               <th scope="col">Name</th>
               <th scope="col">Updated</th>
             </tr>
