@@ -305,7 +305,7 @@ export const generateUI = inngest.createFunction(
                               const payload = line.slice(6).trim()
                               if(payload === "[DONE]") break
                               try {
-                                  const chunk : string = JSON.parse(payload)?.choices?.[0]?.delta?.content ?? ''
+                                  const chunk: string = JSON.parse(payload)?.choices?.[0]?.delta?.content ?? ''
                                   if(chunk){
                                       await flush(chunk)
                                   }

@@ -15,17 +15,26 @@ export async function generateMetadata(){
 export default async function Profile() {
   const user = await getAuth()
 
-  const project = await prisma.projects.findMany({
-    where: {
-      userId: user?.id,
-    },
-    select: {
-      id: true,
-      title: true,
-    }
-  })
+  const [project, total] = await Promise.all([
+    prisma.projects.findMany({
+      where: {
+        userId: user?.id,
+      },
+
+      select: {
+        id: true, 
+        title: true,
+      }
+    }),
+
+    prisma.projects.count({
+      where: {
+        userId: user?.id
+      }
+    }),
+  ])
 
   if(!user) return null
 
-  return <ProfilePage user={user} project={project} />
+  return <ProfilePage user={user} project={project} total={total} />
 }

@@ -45,9 +45,9 @@ I/O is an advanced, real-time AI code generation platform built to turn text pro
                                                         ▼
                                             [ Generated UI & Assets ]
                                                         │
-                      ┌─────────────────────────────────┴─────────────────────────────────┐
-                      ▼                                                                   ▼
-       [ Supabase Storage & Prisma DB ]                                         [ GitHub REST API Sync ]
+                                                        |
+                                                        ▼                                                
+                                           Supabase Storage & Prisma DB                                       
 ```
 
 ### Why Inngest over Server-Sent Events (SSE)?
@@ -61,8 +61,8 @@ Follow these steps to run the project locally on your machine:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com.git
-   cd io-clone
+   git clone https://github.com/Genesispro-maker/I0.git
+   cd io
    ```
 
 2. **Install dependencies:**

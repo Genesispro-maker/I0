@@ -1,7 +1,5 @@
 "use client"
-export const dynamic = "force-dynamic";
-
-import { Fragment, useEffect, useMemo, useState } from "react"
+import { use, useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { Project } from "@/app/types/types"
 import Link from "next/link"
@@ -9,7 +7,8 @@ import Skeleton from "./skeleton"
 import { Plus, Search } from "lucide-react"
 import { useDebounce } from "@/app/hooks/use-debounce"
 
-export default function ProjectsPage({ searchParams,} : { searchParams: Promise<{[key: string]: string[] | null | undefined}> }) {
+export default function ProjectsPage({ searchParams,} : { searchParams: Promise<{[key: string]: string | string[] | null | undefined}> }) {
+  const param = use(searchParams)
   const [projects, setProjects] = useState<Project[]>([])
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "unauthorized">("idle")
   const [search, setSearch] = useState<string>("")
@@ -22,10 +21,10 @@ export default function ProjectsPage({ searchParams,} : { searchParams: Promise<
 
   useEffect(() => {
     document.title = "Chats - I/0 by Genesis"
-  }, [searchParams])
+  }, [])
 
   useEffect(() => {
-    const currentParam = searchParams.get("search") ?? ''
+    const currentParam = (param?.search as string) ?? ''
     if(currentParam === value) return
 
     const params = new URLSearchParams(searchParams.toString())
@@ -44,7 +43,7 @@ export default function ProjectsPage({ searchParams,} : { searchParams: Promise<
     fetch(`/api/projects?search=${encodeURIComponent(value)}`).then(res => {
         if (res.status === 401) {
           setStatus("unauthorized")
-          return null
+          return
         }
         return res.json()
       }).then(data => {
@@ -67,69 +66,62 @@ export default function ProjectsPage({ searchParams,} : { searchParams: Promise<
     }, {} as Record<string, Project[]>)
   }, [projects])
 
-  if(status === "loading") return <Skeleton />
+  const groups = Object.entries(groupby)
 
   return (
-    <main className="p-4">
-      <div className="flex justify-between">
+    <main className="mx-auto w-full max-w-3xl p-4">
+      <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Chats</h1>
-        <button onClick={() => router.push("/")} className="flex gap-2 items-center border rounded-lg px-3 dark:hover:bg-zinc-950 py-1 border-zinc-400 hover:bg-zinc-300 dark:border-zinc-800 hover:cursor-pointer dark:text-zinc-200">
+        <button onClick={() => router.push("/")} className="flex items-center gap-2 rounded-lg border border-zinc-400 px-3 py-1 hover:cursor-pointer hover:bg-zinc-300 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-950">
           Create <Plus size={20} />
         </button>
       </div>
 
-      <div className="flex my-2 items-center border-zinc-400 gap-2.5 border w-full max-w-2xl p-1 rounded-md dark:border-zinc-800 focus-within:outline focus-within:outline-zinc-300 dark:focus-within:outline-zinc-800">
-        <Search size={20} color="gray" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} className="focus:outline-none w-full bg-transparent" type="text"
-          placeholder="search projects..." />
-      </div>
+     <div className="my-3 flex w-full items-center gap-2.5 rounded-md border border-zinc-400 p-1 focus-within:outline focus-within:outline-zinc-300 dark:border-zinc-800 dark:focus-within:outline-zinc-800">
+       <Search size={20} color="gray" />
+       <input value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-transparent focus:outline-none" type="text" placeholder="search projects..." />
+     </div>
 
-      <div className="p-5">
-        {/* {projects.length === 0 && status === "idle" && (
-          <p className="dark:text-zinc-400 text-center my-8">
-            No projects found matching &quot;{search}&quot;
-          </p>
-        )} */}
-        <table className="w-full">
-          <thead className="font-medium border-b border-zinc-400 dark:border-zinc-800 tracking-wider dark:text-zinc-300 text-xs">
-            <tr className="flex text-zinc-800 justify-between">
-              <th scope="col">Name</th>
-              <th scope="col">Updated</th>
-            </tr>
-          </thead>
-    
-          <tbody>
-            {Object.entries(groupby).map(([group, projects]) => (
-              <Fragment key={group}>
-                <tr>
-                  <td colSpan={2} className="text-xs uppercase text-zinc-500 pt-4 pb-1">
-                    {group}
-                  </td>
-                </tr>
-                {projects.map((p) => (
-                  <tr className="flex justify-between" key={p.id}>
-                    <td scope="row" className="text-sm tracking-wide dark:text-zinc-200 font-medium" aria-label={p.title}>
-                      <Link href={`/features/project/${p.id}`}>{p.title}</Link>
-                    </td>
-                    <td>
-                      <time dateTime={p.updatedAt} aria-label={`Project was updated on ${new Date(p.updatedAt).toLocaleDateString("en-US", {
-                        dateStyle: "long"
-                      })}`}>
-                        {new Date(p.updatedAt).toLocaleString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </time>
-                    </td>
-                  </tr>
-                ))}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+     {status === "loading" ? (
+      <Skeleton />
+     ) : status === "unauthorized" ? (
+       <p role="alert">
+         <Link href={"/"} className="underline">Back</Link>
+       </p>
+     ) : status === "error" ? (
+      <div role="alert">
+        <p>Something went wrong. Check your connection and try again.</p>
+        <button onClick={() => router.refresh()}>Refresh</button>
       </div>
-      {status === "error" && <h1>Something went Wrong</h1>}
+     ) : groups.length === 0 ? (
+        <p className="my-8 text-center flex flex-col items-center gap-10">
+          {search ? `No projects found matching "${search}"` : <>No projects Found <Link className="border size-auto p-1 rounded-md bg-black dark:text-black text-white items-center gap-2 hover:bg-zinc-800 dark:hover:bg-zinc-300 transition-colors ease-in-out dark:bg-white flex" href={"/"}>Create <Plus size={18} /></Link></>}
+        </p>
+     ) : (
+      <div className="mt-6 space-y-6">
+        {groups.map(([group, projects]) => (
+          <section key={group}>
+            <h2 className="px-3 pb-1 text-xs text-zinc-500">{group}</h2>
+            <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              {projects.map((p) => (
+                <li key={p.id}>
+                  <Link className="flex items-center justify-between gap-4 rounded-xs px-3 py-3 hover:bg-zinc-100 dark:hover:bg-zinc-900" href={`/features/project/${p.id}`}>
+                    <span className="truncate text-sm font-medium dark:text-zinc-200">{p.title}</span>
+                    <time dateTime={p.updatedAt} className="shrink-0 text-xs text-zinc-500">
+                    {new Date(p.updatedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </time>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+     )}
     </main>
   )
 }

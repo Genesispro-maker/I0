@@ -4,7 +4,7 @@ import { Loader, I0 } from "@/app/util/constants"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import clsx from "clsx"
-import { ChevronRight, Ellipsis, List, Trash2, UserRound } from "lucide-react"
+import { ChevronRight, Ellipsis, List, Mail, SunMoon, Trash2, User2, UserRound } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Menu } from "@base-ui/react"
@@ -82,7 +82,9 @@ export function Sidebar({ isOpen, user }:{ isOpen: boolean; user: User | null })
               )}
 
               {!loading && projects.length === 0 ?  (
-                <p className="text-sm px-2 py-1">No projects yet</p>
+                <p className="text-sm text-zinc-600 dark:text-white flex flex-col items-center px-2 py-1">
+                  No projects yet
+                </p>
               ) : (
                 <div>
                   {projects.map(p => (
@@ -121,7 +123,7 @@ export function Sidebar({ isOpen, user }:{ isOpen: boolean; user: User | null })
         </div>
       </div>
 
-      <div className="w-56 mt-2 px-0.5">
+      <div className="w-56 mt-2 border border-zinc-400 dark:border-zinc-800 rounded-md">
         <Menu.Root>
           <Menu.Trigger className="w-full select-none flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-800 hover:text-black hover:dark:text-white cursor-pointer transition-colors group">
             {user?.image ? <Image className="rounded-full ring-1 ring-white/10" src={user?.image ?? ""} alt={user?.username ?? ""} width={26} height={26} /> : <p className="w-7 font-bold border border-zinc-300 dark:border-zinc-800 bg-zinc-400 dark:bg-zinc-600 dark:text-black rounded-full">{user?.username?.slice(0, 1).toUpperCase()}</p>}
@@ -132,22 +134,26 @@ export function Sidebar({ isOpen, user }:{ isOpen: boolean; user: User | null })
            <Menu.Portal>
              <Menu.Positioner align="end" className="outline-hidden" sideOffset={10}>
                <Menu.Popup className='border w-60 rounded-lg border-zinc-400 dark:border-zinc-800 bg-white dark:bg-black'>
-                 <div className="px-2 py-2">
-                  <Menu.Item>{user?.username}</Menu.Item>
-                  <Menu.Item className="text-sm">{user?.email}</Menu.Item>
+                 <div className="px-2 py-2 dark:text-zinc-300">
+                  <Menu.Item className="text-md font-semibold gap-2 items-center flex"><User2 size={15} />{user?.username}</Menu.Item>
+                  <Menu.Item className="text-sm flex gap-2 items-center">
+                    <Mail size={15} />
+                    {user?.email}
+                  </Menu.Item>
                  </div>
 
                 <Menu.Separator className="h-px w-full bg-zinc-400 dark:bg-zinc-800" />
                   <div className="px-2 py-1 flex flex-col gap-1">
                     <Menu.Item onClick={() => {
                       router.push(`/features/profile`)
-                    }} className="dark:hover:bg-zinc-800 hover:bg-zinc-300 rounded-sm w-full p-1 hover:cursor-pointer flex gap-2 items-center text-sm"><UserRound size={19} /> Profile</Menu.Item>
+                    }} className="dark:hover:bg-zinc-800 hover:bg-zinc-300 rounded-sm w-full p-1 hover:cursor-pointer flex gap-2 items-center text-sm">
+                      <UserRound size={18} /> Profile</Menu.Item>
                   </div>
 
                 <Menu.Separator className="h-px w-full bg-zinc-400 dark:bg-zinc-800" />
                   <div className="px-2 py-1">
                     <Menu.Item closeOnClick={false} className="flex items-center gap-2">
-                      <span className="text-sm">Theme: </span>
+                      <span className="text-sm flex gap-2 items-center"><SunMoon size={18} />Theme: </span>
                       <ThemeToggle />
                     </Menu.Item>
                   </div>
