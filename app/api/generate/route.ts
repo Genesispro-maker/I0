@@ -4,85 +4,103 @@ import { inngest } from "@/app/lib/inngest/client";
 import { getSubscriptionToken } from "inngest/realtime";
 import { generationchannel } from "@/app/lib/inngest/channel";
 
-export async function POST(req: Request){
-  const user = await getAuth()
-
-  if(!user){
-    return new Response("unauthorized", {
-      status: 401,
-    })
-  }
-
-  let body: { prompt?: string, images?: string[] }
+export async function POST(req: Request) {
+  let projectId: string | undefined;
 
   try {
-    body = await req.json()
-  } catch {
-    return new Response("Invalid body", {
-      status: 400
-    })
-  }
+    const user = await getAuth();
 
-  const prompt = body.prompt?.trim()
-  if (!prompt) return new Response("prompt is required", {
-    status: 422
-  });
+    if (!user) {
+      return new Response("unauthorized", {
+        status: 401
+      });
+    }
 
-  const project = await prisma.projects.create({
-    data: {
-      title: "untitled",
-      userId: user.id,
-      status: "sending",
-      messages: {
-        create: [
-          {
-            role: "USER",
-            content: prompt,
-            images: {
-              create: (body.images || []).map((url) => ({
-                url
-              }))
-            }
-          },
+    let body: { prompt?: string; images?: string[] };
 
-          {
-            role: "ASSISTANT",
-            content: ""
-          }
-        ]
+    try {
+      body = await req.json();
+    } catch {
+      return new Response("Invalid body", {
+        status: 400
+      });
+    }
+
+    const prompt = body.prompt?.trim();
+    if (!prompt) return new Response("prompt is required", {
+      status: 422
+    });
+
+    const project = await prisma.projects.create({
+      data: {
+        title: "untitled",
+        userId: user.id,
+        status: "sending",
+        messages: {
+          create: [
+            {
+              role: "USER",
+              content: prompt,
+              images: {
+                create: (body.images || []).map((url) => ({ url })),
+              },
+            },
+            {
+              role: "ASSISTANT",
+              content: "",
+            },
+          ],
+        },
       },
-    },
+      include: {
+        messages: {
+          include: { images: true },
+        },
+      },
+    });
 
-    include: {
-      messages: {
-        include: {
-          images: true
-        }
-      }
-    }
-  })
+    projectId = project.id;
 
-  const assistantmessage = project.messages.find((m) => m.role === "ASSISTANT");
+    const assistantmessage = project.messages.find((m) => m.role === "ASSISTANT");
 
-  await inngest.send({
-    name: "ui/generate.requested",
-    data: {
-      prompt,
+    await inngest.send({
+      name: "ui/generate.requested",
+      data: {
+        prompt,
+        projectId: project.id,
+        messageId: assistantmessage?.id ?? "",
+        userId: user.id,
+        images: body.images,
+      },
+    });
+
+    const token = await getSubscriptionToken(inngest, {
+      channel: generationchannel({ projectId: project.id }).name,
+      topics: ["progress"],
+    });
+
+    return Response.json({
       projectId: project.id,
-      messageId: assistantmessage?.id ?? '',
-      userId: user.id,
-      images: body.images,
+      messageId: assistantmessage?.id,
+      token,
+    });
+  } catch (err) {
+    if (projectId) {
+      await prisma.projects.update({
+          where: {
+            id: projectId
+          }, data: {
+            status: "failed"
+          }}).catch(() => {});
     }
-  })
 
-  const token = await getSubscriptionToken(inngest, {
-    channel: generationchannel({projectId: project.id}).name,
-    topics: ["progress"]
-  })
-
-  return Response.json({
-    projectId: project.id,
-    messageId: assistantmessage?.id,
-    token
-  })
+    return Response.json(
+      {
+        detail: err instanceof Error ? err.message : String(err),
+      },
+      {
+        status: 500
+      }
+    );
+  }
 }
