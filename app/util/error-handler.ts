@@ -5,7 +5,7 @@ const generic = (error: unknown): string => {
   const text = error instanceof Error ? `${error.name} ${error.message}` : ""
 
   if (/fetch failed|network|ECONN|ENOTFOUND|ETIMEDOUT/i.test(text)) {
-    return "Network problem. Please check your connection and try again."
+    return "No Internet Connection. Please check your connection and try again."
   }
   if (/prisma|database|sql/i.test(text)) {
     return "We're having trouble reaching our servers. Please try again shortly."
