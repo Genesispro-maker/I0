@@ -24,7 +24,9 @@ export async function POST(req: Request){
   }
 
   const prompt = body.prompt?.trim()
-  if (!prompt) return new Response("prompt is required", { status: 422 });
+  if (!prompt) return new Response("prompt is required", {
+    status: 422
+  });
 
   const project = await prisma.projects.create({
     data: {

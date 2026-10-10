@@ -55,8 +55,6 @@ export const generateUI = inngest.createFunction(
                 })
             })
 
-            await step.sleep("delay-stream", "2s");
-
             const iterating = Boolean(file && Object.keys(file).length > 0 && reasoning)
 
             const userprompt = iterating ? `Previous files:\n${JSON.stringify(file, null, 2)}\n\nPrevious reasoning:\n${reasoning}\n\nUser request:\n${prompt}` : `Build this UI ${prompt}`
