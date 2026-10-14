@@ -17,6 +17,7 @@ export function useStream(): StreamType {
   const pathname = usePathname()
   const store = useGeneration()
   const storeRef = useRef(store)
+  const abortRef = useRef<AbortController | null>(null);
   storeRef.current = store
 
   const [status, setStatus] = useState<Status>("idle")
@@ -31,6 +32,8 @@ export function useStream(): StreamType {
   const cancel = useCallback(() => {
     subscriptionRef.current?.close()
     subscriptionRef.current = null
+
+    abortRef.current?.abort()
     setStatus("idle")
   }, [])
 

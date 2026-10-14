@@ -198,7 +198,7 @@ export const markdown: Components = {
     </li>
   ),
   code: ({ children }) => (
-    <code className="font-bold dark:text-zinc-300 text-black text-sm">{children}</code>
+    <code className="font-bold bg-transparent border border-zinc-400 p-px rounded-sm dark:text-zinc-300 text-black text-sm">{children}</code>
   ),
   strong: ({ children }) => (
     <strong className="dark:text-zinc-200 font-semibold">{children}</strong>

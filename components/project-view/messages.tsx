@@ -5,7 +5,7 @@ import { Collapsible } from "@base-ui/react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import Image from "next/image"
 import Loader from "../stream-loader"
 
@@ -129,19 +129,23 @@ function Assistantmessage({ isStreaming, Reasoning, error, summary }: Assistant)
       {isThinking ? (
         <Loader />
       ) : (
-        <Collapsible.Root open={open} onOpenChange={setOpen} className="flex mx-2 mt-1 w-130 flex-col justify-center text-neutral-950 dark:text-white">
-          <Collapsible.Trigger aria-controls="panel" aria-expanded={open} role="button" className="group text-xs text-zinc-800 font-medium dark:text-zinc-300 hover:cursor-pointer flex h-8 items-center gap-1.5">
-            Thoughts <ChevronIcon className="group-data-panel-open:rotate-90 transition-transform duration-150" />
-          </Collapsible.Trigger>
-          <Collapsible.Panel aria-controls="panel" role="region" aria-label="reasoning" className="flex border w-full rounded-lg border-zinc-400 dark:border-zinc-800 px-3 py-2 h-50 flex-col justify-end overflow-hidden text-sm transition-[height] duration-150 ease-[ease-out] [&[hidden]:not([hidden='until-found'])]:hidden data-ending-style:h-0 data-starting-style:h-0">
-            <div className="panel min-h-full scrollbar-none overflow-y-auto relative overflow-x-hidden">
-              <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]} components={markdown}>
-                {Reasoning ?? ""}
-              </ReactMarkdown>
-              <div className="sticky bottom-0 left-0 right-0 h-5 bg-linear-to-t dark:from-[#020000] from-white to-transparent pointer-events-none" />
-            </div>
-          </Collapsible.Panel>
-        </Collapsible.Root>
+        <Fragment>
+         {Reasoning && Reasoning.length !== 0 && (
+          <Collapsible.Root open={open} onOpenChange={setOpen} className="flex mx-2 mt-1 w-130 flex-col justify-center text-neutral-950 dark:text-white">
+            <Collapsible.Trigger aria-controls="panel" aria-expanded={open} role="button" className="group text-xs text-zinc-800 font-medium dark:text-zinc-300 hover:cursor-pointer flex h-8 items-center gap-1.5">
+              Thoughts <ChevronIcon className="group-data-panel-open:rotate-90 transition-transform duration-150" />
+            </Collapsible.Trigger>
+            <Collapsible.Panel aria-controls="panel" role="region" aria-label="reasoning" className="flex border w-full rounded-lg border-zinc-400 dark:border-zinc-800 px-3 py-2 h-50 flex-col justify-end overflow-hidden text-sm transition-[height] duration-150 ease-[ease-out] [&[hidden]:not([hidden='until-found'])]:hidden data-ending-style:h-0 data-starting-style:h-0">
+              <div className="panel min-h-full scrollbar-none overflow-y-auto relative overflow-x-hidden">
+                <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]} components={markdown}>
+                  {Reasoning ?? ""}
+                </ReactMarkdown>
+                <div className="sticky bottom-0 left-0 right-0 h-5 bg-linear-to-t dark:from-[#020000] from-white to-transparent pointer-events-none" />
+              </div>
+            </Collapsible.Panel>
+          </Collapsible.Root>
+         )}
+        </Fragment>
       )}
 
       {summary && (

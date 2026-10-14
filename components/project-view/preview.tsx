@@ -15,7 +15,7 @@ import { Zip } from "@/app/util/compress";
   return hash.toString(36);
 }
 
-function Filedownload({ className, filename }: { filename: string } & React.ComponentProps<"button">){
+function Filedownload({ filename }: { filename: string }){
  const { sandpack } = useSandpack()
 
  const files = Object.fromEntries(Object.entries(sandpack.files).map(([path, file]) => [path, file.code]))
@@ -30,7 +30,7 @@ function Filedownload({ className, filename }: { filename: string } & React.Comp
     URL.revokeObjectURL(url)
   }
 
-  return <button aria-label="Download code" className={className} type="button" onClick={download}>
+  return <button aria-label="Download code" className="fixed bg-white hover:bg-zinc-300 transition-colors ease-in-out top-2.5 right-6 text-black p-1 z-50 hover:cursor-pointer rounded-lg w-fit" type="button" onClick={download}>
            <Download size={18} />
          </button>
 }
@@ -66,7 +66,7 @@ export function Preview({ files, id, filesRef, filename }: { files: Record<strin
            externalResources: ["https://cdn.tailwindcss.com"],
          }} theme="dark">
          <SandpackLayout style={{ height: "100%", }}>
-          <Filedownload filename={filename} className="fixed top-2.5 right-6 text-black dark:text-zinc-300 dark:hover:bg-zinc-800 hover:bg-zinc-300 p-1 z-50 hover:cursor-pointer rounded-lg w-fit" />
+          <Filedownload filename={filename} />
            <Tabs.Panel keepMounted value="preview" className="w-full">
               <Mechanic messageId={id} />
               <SandpackPreview showNavigator={true} showRefreshButton={false} showOpenInCodeSandbox={false} style={{ height: "100%" }} />

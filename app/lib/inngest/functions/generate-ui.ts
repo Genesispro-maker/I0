@@ -65,6 +65,7 @@ export const generateUI = inngest.createFunction(
                 try {
                     const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
                         method: "POST",
+                        signal: controller.signal,
                         headers: {
                             "Content-Type": "application/json",
                             "Authorization": `Bearer ${process.env.GOOGLE}`
@@ -142,7 +143,7 @@ export const generateUI = inngest.createFunction(
                                 const jsonindex = buffers.raw.indexOf("{")
 
                                 if(index === -1 && jsonindex === -1){
-                                    // buffers.raw = buffers.raw.slice(Math.max(0, buffers.raw.length - tags.THINK_OPEN.length))
+                                    buffers.raw = buffers.raw.slice(Math.max(0, buffers.raw.length - tags.THINK_OPEN.length))
                                     return
                                 }
 
@@ -307,7 +308,9 @@ export const generateUI = inngest.createFunction(
                                   if(chunk){
                                       await flush(chunk)
                                   }
-                              } catch {}
+                              } catch {
+                                await send("error", "Something went wrong")
+                              }
                           }
                       }
                       
@@ -331,7 +334,7 @@ export const generateUI = inngest.createFunction(
             const suggestions = result.suggestions.split("\n").map(s => s.trim()).filter(Boolean)
 
            await step.run("persist-result", async () => (
-            await Promise.all([
+            await prisma.$transaction([
                 prisma.message.update({
                     where: {
                         id: messageId,

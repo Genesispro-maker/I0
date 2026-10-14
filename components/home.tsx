@@ -90,7 +90,7 @@ export default function Home({ user }: Props){
         <div className="relative flex-3 overflow-y-auto p-1.5">
           <button className="absolute top-4 left-4 rounded-sm hover:bg-zinc-200 dark:hover:bg-zinc-800 p-1 hover:cursor-pointer" onClick={() => setSidebarOpen(p => !p)}><PanelLeft size={18} /></button>
           <div className="flex flex-col items-center mt-10">
-            <h1 className="text-3xl font-bold">What Do You Wanna Spawn ?</h1>
+            <h1 className="text-3xl sm:text-xl md:2xl font-bold">What Do You Wanna Spawn ?</h1>
             <PromptInput
              cancel={cancel}
              user={user}

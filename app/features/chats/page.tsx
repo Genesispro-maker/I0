@@ -101,13 +101,13 @@ export default function ProjectsPage({ searchParams,} : { searchParams: Promise<
       <div className="mt-6 space-y-6">
         {groups.map(([group, projects]) => (
           <section key={group}>
-            <h2 className="px-3 pb-1 text-xs text-zinc-500">{group}</h2>
+            <h2 className="px-3 pb-px text-xs text-zinc-300">{group}</h2>
             <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {projects.map((p) => (
                 <li key={p.id}>
-                  <Link className="flex items-center justify-between gap-4 rounded-xs px-3 py-3 hover:bg-zinc-100 dark:hover:bg-zinc-900" href={`/features/project/${p.id}`}>
+                  <Link className="flex items-center m-1 justify-between rounded-xs w-full h-8 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900" href={`/features/project/${p.id}`}>
                     <span className="truncate text-sm font-medium dark:text-zinc-200">{p.title}</span>
-                    <time dateTime={p.updatedAt} className="shrink-0 text-xs text-zinc-500">
+                    <time dateTime={p.updatedAt} className="shrink-0 text-xs text-zinc-300">
                     {new Date(p.updatedAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",

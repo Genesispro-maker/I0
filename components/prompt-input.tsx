@@ -1,4 +1,4 @@
-import { ArrowUp, Plus, Square } from "lucide-react"
+import { ArrowUp, Plus, SquareSquare } from "lucide-react"
 import { User } from "@/app/types/types"
 import { Getfiletype } from "@/app/util/constants"
 import React, { ChangeEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, } from "react"
@@ -129,10 +129,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
               )
             })()}
 
-            <textarea
-              onKeyDown={handleKeyDown}
-              aria-label="Prompt Input"
-              value={prompt}
+            <textarea onKeyDown={handleKeyDown} aria-label="Prompt Input" value={prompt}
               rows={1}
               className={`w-full ${textareasize} outline-none p-2 text-base sm:text-sm overflow-hidden resize-none transition-all duration-300 ease-in-out bg-transparent`}
               placeholder="Ask I/0 to Build...."
@@ -144,7 +141,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
                 <Plus aria-hidden size={18} className="shrink-0" />
               </button>
               <button onClick={submit} className="active:scale-75 hover:cursor-pointer hover:scale-110 transition-all duration-300 bg-black dark:bg-white p-2 sm:p-1 text-white rounded-md dark:text-black">
-                {loading ? <Square size={18} className="shrink-0" aria-hidden /> : <ArrowUp size={18} className="shrink-0" aria-hidden />}
+                {loading ? <SquareSquare size={18} className="shrink-0" aria-hidden /> : <ArrowUp size={18} className="shrink-0" aria-hidden />}
               </button>
             </div>
           </Dialog.Root>

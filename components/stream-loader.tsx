@@ -13,12 +13,9 @@ export default function Loader({ label = "Thinking" }: { label?: string }) {
           }
         }
       `}</style>
-      <div className="flex gap-0.5">
+      <div className="flex gap-2">
         {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            aria-hidden="true"
-            className="size-1 rounded-full bg-zinc-500 dark:bg-zinc-400"
+          <span key={i} aria-hidden="true" className="size-1 rounded-full bg-zinc-500 dark:bg-zinc-400"
             style={{ animation: "matrix-pulse 1s ease-in-out infinite", animationDelay: `${i * 0.15}s` }}
           />
         ))}

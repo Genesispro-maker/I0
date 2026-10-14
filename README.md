@@ -62,7 +62,7 @@ Follow these steps to run the project locally on your machine:
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/Genesispro-maker/I0.git
-   cd io
+   cd I0
    ```
 
 2. **Install dependencies:**
