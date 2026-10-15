@@ -67,11 +67,11 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
       return () => window.removeEventListener("keydown", Keydown)
     }, [])
 
-    const submit = useCallback(() => {
+    const submit = useCallback(async () => {
       if (!prompt.trim()) return
-      onSubmit(prompt)
-      localStorage.removeItem("prompt")
+      await onSubmit(prompt)
       setPrompt("")
+      localStorage.removeItem(prompt)
     }, [prompt, onSubmit])
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
