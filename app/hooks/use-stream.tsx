@@ -142,6 +142,7 @@ export function useStream(): StreamType {
 
       if (isNewchat) {
         router.push(`/features/project/${projectId}`)
+        storeRef.current.clearMessages()
       }
 
       await Stream(projectId, token.key, token.apiBaseUrl)
