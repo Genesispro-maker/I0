@@ -66,8 +66,7 @@ export default function Home({ user }: Props){
     } catch (error) {
       return error
     }
-
-    localStorage.removeItem("prompt")
+    
   }, [files, status, submit]);
 
   return (

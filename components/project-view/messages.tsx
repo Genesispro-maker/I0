@@ -65,7 +65,9 @@ export function Messages({ isProject, project }: Props){
 
         if(m.role === "ASSISTANT"){
           const isStreaming = isProject && m.id === messageId
-          const Reasoning = isStreaming ? reasoning : m.reasoning
+          const currenterr = isStreaming ? error : null
+
+          const Reasoning = currenterr ? null : (isStreaming ? reasoning : m.reasoning)
           const Summary = isStreaming ? summary : m.summary
 
           return (
@@ -98,7 +100,7 @@ export function Messages({ isProject, project }: Props){
           status={status}
           m={{ id: messageId } as Message}
           isStreaming
-          Reasoning={reasoning}
+          Reasoning={error ? null : reasoning}
           error={error}
           summary={summary}
         />

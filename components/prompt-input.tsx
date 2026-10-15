@@ -70,6 +70,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
     const submit = useCallback(() => {
       if (!prompt.trim()) return
       onSubmit(prompt)
+      localStorage.removeItem("prompt")
       setPrompt("")
     }, [prompt, onSubmit])
 

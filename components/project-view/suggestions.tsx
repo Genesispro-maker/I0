@@ -13,7 +13,7 @@ export function Suggestions({ textareaRef }: { textareaRef: RefObject<InputHandl
                 const value = textareaRef.current.textarea.value = s.replace(/-[0-9]/, "")
                 textareaRef.current.setValue(value)
                }
-              }} className="text-xs text-black dark:bg-zinc-300 whitespace-nowrap px-2 py-1 hover:cursor-pointer border max-w-250 border-zinc-700 rounded-full hover:bg-zinc-800 hover:text-white transition-colors" key={i}>{s.replace(/^\d+\.\s*/, "")}</button>
+              }} className="text-xs text-black dark:bg-zinc-800 dark:text-zinc-300 whitespace-nowrap px-2 py-1 hover:cursor-pointer border max-w-250 border-zinc-700 rounded-full hover:bg-zinc-800 hover:text-white transition-colors" key={i}>{s.replace(/^\d+\.\s*/, "")}</button>
             ))}
         </div>
     )
