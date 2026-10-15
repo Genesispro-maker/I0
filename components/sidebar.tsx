@@ -160,9 +160,12 @@ export function Sidebar({ isOpen, user }:{ isOpen: boolean; user: User | null })
 
                  <Menu.Separator className="h-px w-full bg-zinc-400 dark:bg-zinc-800" />
                   <div className="p-1">
-                    <Menu.Item onClick={() => signOut({
+                    <Menu.Item onClick={() => toast.promise(signOut({
                       callbackUrl: "/",
-                      redirect: true,
+                      redirect: true
+                    }), {
+                      loading: "Logging-Out...",
+                      success: "Logged Out"
                     })} className="dark:hover:bg-zinc-800 hover:bg-zinc-300 rounded-sm w-full p-1 hover:cursor-pointer flex gap-2 items-center text-sm"><SignOutIcon /> Sign Out</Menu.Item>
                   </div>
                </Menu.Popup>
