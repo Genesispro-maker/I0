@@ -96,7 +96,7 @@ export async function POST(req: Request) {
 
     return Response.json(
       {
-        detail: err instanceof Error ? err.message : String(err),
+        detail: err instanceof Error ? `${err.message}, ${err.cause}` : String(err),
       },
       {
         status: 500
