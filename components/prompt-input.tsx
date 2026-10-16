@@ -69,8 +69,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
 
     const submit = useCallback(async () => {
       if (!prompt.trim()) return
-      await onSubmit(prompt)
-      setPrompt("")
+      onSubmit(prompt)
       localStorage.removeItem(prompt)
     }, [prompt, onSubmit])
 

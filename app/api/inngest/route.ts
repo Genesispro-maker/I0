@@ -6,4 +6,5 @@ export const { GET, POST, PUT } = serve({
     client: inngest,
     functions: [generateUI],
     streaming: true,
+    servePath: "/api/inngest"
 })
