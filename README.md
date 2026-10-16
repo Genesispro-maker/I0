@@ -1,10 +1,11 @@
-=# I0 (Input/Output)
+I/0 (Input/Output)
 
 Describe a UI in plain language and get back a working React component. Preview it live in the browser, then download the code.
 
 **[Live demo](https://i0-two.vercel.app)** · Next.js · TypeScript · Inngest · Prisma · Gemini
 
-
+ [**Watch the Project Demo Video on Google Drive**](https://drive.google.com/file/d/1BVgxPGkYiJC5-MMRv-5sSXk2RUYcbrVu/view?usp=drive_link)
+ 
 ## What it does
 
 - Turns a text prompt into a React component using Gemini.
@@ -22,16 +23,15 @@ flowchart LR
     R -->|event| Q["Inngest"]
     Q --> F["Generation function (steps)"]
     F -->|call| G["Gemini"]
-    F -->|records| D["PostgreSQL via Prisma"]
-    F -->|files| S["Supabase Storage"]
+    F -->|records| D["PostgreSQL(Supabase DB) via Prisma"]
     F -.->|progress| U
 ```
 
 1. You submit a prompt. The route hands the work to Inngest as an event instead of generating inside the request.
 2. Inngest runs the generation function in steps. Each step runs as its own invocation, so it stays inside Vercel's serverless time limit (10s on my deployment) and can retry on its own.
 3. The model call goes to Gemini. If Gemini throttles the request, the step retries with exponential back-off. A concurrency limit caps how many generations run at once, so several users don't trip the provider's rate limits together.
-4. The result is saved: files in Supabase Storage, records in PostgreSQL through Prisma.
-5. Progress reaches the browser by subscribing to real-time database changes using inngest Realtime as Prisma updates the records.
+4. The result is saved, records in PostgreSQL through Prisma.
+5. Progress reaches the browser by subscribing to real-time changes using inngest Realtime as Prisma updates the records.
 
 ## Design decisions
 
@@ -50,8 +50,7 @@ flowchart LR
 | App | Next.js (App Router), React, TypeScript, Tailwind CSS |
 | Live preview | Sandpack |
 | Background jobs | Inngest |
-| Database | PostgreSQL, Prisma |
-| Storage | Supabase Storage |
+| Database | Supabase DB, Prisma |
 | Auth and email | NextAuth, Nodemailer |
 | AI | Gemini (flash-lite) via Google AI Studio |
 | Hosting | Vercel |
