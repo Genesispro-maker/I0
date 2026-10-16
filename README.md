@@ -1,77 +1,73 @@
-# I/O — AI-Powered UI Generation Platform
+=# I0 (Input/Output)
 
-I/O is an advanced, real-time AI code generation platform built to turn text prompts into clean, deployable UI components. The engine leverages modern LLMs, resilient background event queues, and automated version control integration to deliver a seamless production-ready workspace.
+Describe a UI in plain language and get back a working React component. Preview it live in the browser, then download the code.
 
-* **Live URL:** https://i0-app.vercel.app/ 
-* **Repo:** https://github.com/Genesispro-maker/I0
+**[Live demo](https://i0-two.vercel.app)** · Next.js · TypeScript · Inngest · Prisma · Gemini
 
----
 
-## Architectural Features
+## What it does
 
-* **Resilient Event Architecture:** Migrated from low-level, Server-Sent Events (SSE) to **Inngest** to orchestrate resilient, distributed background jobs for step-by-step code generation.
-* **Concurrency & Rate Limit Control:** Configured Inngest queues with exponential **back-offs, automated retries, and strict concurrency limits** to seamlessly manage upstream LLM rate-throttling (Gemini AI).
-* **Type-Safe Data Layer:** Designed a robust PostgreSQL database schema using **Prisma ORM** coupled with **Supabase** for secure object storage.
-* **Custom Security Infrastructure:** Rolled out a secure authentication extension including a password reset workflow driven by **Nodemailer** and secure, cryptographically random verification tokens generated via Node's `crypto.randomBytes`.
+- Turns a text prompt into a React component using Gemini.
+- Shows the generated component in a live preview, then lets you download the code.
+- Saves your projects. The Chats page lists them and has search.
+- Has accounts: sign-in with NextAuth, profile editing, and password reset by email.
 
----
+## How it works
 
-## Tech Stack
+The generation doesn't run inside the request that starts it. The API route sends an event to Inngest, and Inngest runs the generation in the background.
 
-* **Frontend & Framework:** Next.js (App Router), React.js, TypeScript, Tailwind CSS
-* **Database & Storage:** PostgreSQL, Prisma ORM, Supabase Storage
-* **Event Queue & Real-time:** Inngest
-* **AI Engine:** Google AI Studio (Gemini), but using the openAI Response API
-* **Security & Utilities:** Nodemailer, Crypto API
-
----
-
-## Architecture & Pipeline Breakdown
-
-```text
- [ User Prompt ] 
-        │
-        ▼
- [ Next.js Edge Route ] ──( Triggers Event )──► [ Inngest Event Queue ]
-                                                        │
-                      ┌─────────────────────────────────┴─────────────────────────────────┐
-                      ▼                                 ▼                                 ▼
-         [ Concurrency Throttling ]             [ Back-off & Retries ]          [ Real-time Updates Stream ]
-                      │                                 │                                 │
-                      └─────────────────────────────────┬─────────────────────────────────┘
-                                                        │
-                                                        ▼
-                                                gemini-3.1-flash-lite
-                                                        ▼
-                                            [ Generated UI & Assets ]
-                                                        │
-                                                        |
-                                                        ▼                                                
-                                           Supabase Storage & Prisma DB                                       
+```mermaid
+flowchart LR
+    U["Browser"] -->|prompt| R["Next.js API route"]
+    R -->|event| Q["Inngest"]
+    Q --> F["Generation function (steps)"]
+    F -->|call| G["Gemini"]
+    F -->|records| D["PostgreSQL via Prisma"]
+    F -->|files| S["Supabase Storage"]
+    F -.->|progress| U
 ```
 
-### Why Inngest over Server-Sent Events (SSE)?
-Standard Server-Sent Events break down easily when a network connection drops or an LLM takes too long to respond. By switching to Inngest, the generation logic is isolated into persistent background state machines. If an LLM call fails due to heavy traffic, the system safely backs off and tries again without losing the user's progress or dropping the socket connection.
+1. You submit a prompt. The route hands the work to Inngest as an event instead of generating inside the request.
+2. Inngest runs the generation function in steps. Each step runs as its own invocation, so it stays inside Vercel's serverless time limit (10s on my deployment) and can retry on its own.
+3. The model call goes to Gemini. If Gemini throttles the request, the step retries with exponential back-off. A concurrency limit caps how many generations run at once, so several users don't trip the provider's rate limits together.
+4. The result is saved: files in Supabase Storage, records in PostgreSQL through Prisma.
+5. Progress reaches the browser by subscribing to real-time database changes using inngest Realtime as Prisma updates the records.
 
----
+## Design decisions
 
-## Local Development Setup
+**Background jobs instead of a long-lived request.** I first streamed results over Server-Sent Events. On a serverless platform that ties a generation to one request: it is bound by the function time limit, and a dropped connection or a slow model response can end it. Moving the work into Inngest steps separates the generation from the connection that started it.
 
-Follow these steps to run the project locally on your machine:
+**Retries and concurrency are configured, not assumed.** LLM providers rate-limit and fail intermittently. Back-off, retries and concurrency limits live in the Inngest function config, so a failed call is retried without redoing the steps that already finished.
 
-1. **Clone the repository:**
+**Account security.** Login uses NextAuth. Password reset sends an email through Nodemailer with a one-time token generated by Node's `crypto.randomBytes`.
+
+**Gemini through the OpenAI Responses API.** The app talks to Gemini (Google AI Studio) using the OpenAI Responses API format.
+
+## Tech stack
+
+| Area | Tools |
+| --- | --- |
+| App | Next.js (App Router), React, TypeScript, Tailwind CSS |
+| Live preview | Sandpack |
+| Background jobs | Inngest |
+| Database | PostgreSQL, Prisma |
+| Storage | Supabase Storage |
+| Auth and email | NextAuth, Nodemailer |
+| AI | Gemini (flash-lite) via Google AI Studio |
+| Hosting | Vercel |
+
+## Run it locally
+
+1. Clone and install:
+
    ```bash
    git clone https://github.com/Genesispro-maker/I0.git
    cd I0
-   ```
-
-2. **Install dependencies:**
-   ```bash
    npm install
    ```
 
-3. **Configure Environment Variables:**
-   Create a `.env` file in the root directory and add your credentials:
+2. Create a `.env` file in the project root:
+
    ```env
    DATABASE_URL="your-postgresql-url"
    SUPABASE_URL="your-supabase-url"
@@ -80,21 +76,28 @@ Follow these steps to run the project locally on your machine:
    GEMINI_API_KEY="your-gemini-api-key"
    GITHUB_ACCESS_TOKEN="your-github-token"
    INNGEST_SIGNING_KEY="your-inngest-key"
+   # Also add the variables your auth and email setup needs
+   # (the NextAuth secret and URL, and the SMTP credentials for Nodemailer).
    ```
 
-4. **Run database migrations:**
+3. Run the database migrations:
+
    ```bash
    npx prisma migrate dev
    ```
 
-5. **Start the development servers:**
-   Open two terminal tabs to run the application alongside the Inngest local dev server:
+4. Start the app and the Inngest dev server in two terminals:
+
    ```bash
-   # Tab 1: Next.js App
+   # Terminal 1: the Next.js app
    npm run dev
 
-   # Tab 2: Inngest Dev Server
+   # Terminal 2: the Inngest dev server
    npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000).
+
+## Status
+
+A personal project, deployed on Vercel. The source is open, so feel free to read it or open an issue.
