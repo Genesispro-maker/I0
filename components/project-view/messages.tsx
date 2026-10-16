@@ -124,15 +124,15 @@ function Assistantmessage({ isStreaming, Reasoning, error, summary }: Assistant)
     setOpen(isStreaming)
   }, [isStreaming])
 
-  const isThinking = isStreaming && !Reasoning && !summary && !error
+  const hasError = Boolean(error)
+  const showReasoning = !hasError && Boolean(Reasoning)
+  const isThinking = isStreaming && !hasError && !Reasoning && !summary
 
   return (
     <div>
-      {isThinking ? (
-        <Loader />
-      ) : (
-        <Fragment>
-         {Reasoning && Reasoning.length !== 0 && (
+      {isThinking && <Loader />}
+
+         {showReasoning && (
           <Collapsible.Root open={open} onOpenChange={setOpen} className="flex mx-2 mt-1 w-130 flex-col justify-center text-neutral-950 dark:text-white">
             <Collapsible.Trigger aria-controls="panel" aria-expanded={open} role="button" className="group text-xs text-zinc-800 font-medium dark:text-zinc-300 hover:cursor-pointer flex h-8 items-center gap-1.5">
               Thoughts <ChevronIcon className="group-data-panel-open:rotate-90 transition-transform duration-150" />
@@ -147,8 +147,6 @@ function Assistantmessage({ isStreaming, Reasoning, error, summary }: Assistant)
             </Collapsible.Panel>
           </Collapsible.Root>
          )}
-        </Fragment>
-      )}
 
       {summary && (
         <div className="m-3">
@@ -158,7 +156,7 @@ function Assistantmessage({ isStreaming, Reasoning, error, summary }: Assistant)
         </div>
       )}
 
-      {isStreaming && error && (
+      {hasError && (
         <p role="alert" className="text-red-400 text-sm mx-3 mt-2">{error}</p>
       )}
     </div>

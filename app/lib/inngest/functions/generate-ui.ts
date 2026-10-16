@@ -27,6 +27,7 @@ export const generateUI = inngest.createFunction(
         },
         onFailure: async ({event, error}) => {
             const { projectId } = event.data.event.data as { projectId: string }
+
             await prisma.projects.update({
                 where: {
                     id: projectId
@@ -34,6 +35,13 @@ export const generateUI = inngest.createFunction(
                 data: {
                     status: "error",
                 }
+            }).catch(() => {})
+
+            await inngest.realtime.publish(generationchannel({
+                projectId
+            }).progress, {
+                type: "error",
+                data: "Generation Failed, Try again"
             }).catch(() => {})
         },
     },

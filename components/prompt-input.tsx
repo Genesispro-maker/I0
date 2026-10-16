@@ -71,6 +71,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
       if (!prompt.trim()) return
       onSubmit(prompt)
       localStorage.removeItem(prompt)
+      setPrompt('')
     }, [prompt, onSubmit])
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
