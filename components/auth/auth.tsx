@@ -1,7 +1,7 @@
 "use client"
 import { Loginaction } from "@/app/actions/auth/login"
 import { EMPTY_ACTION_STATE } from "@/app/util/error-handler"
-import { Dispatch, useActionState, useState, useRef, useEffect, useTransition } from "react"
+import { Dispatch, useActionState, useState, useEffect, useTransition } from "react"
 import { Github, Loader, I0 } from "@/app/util/constants"
 import { Dialog } from '@base-ui/react/dialog';
 import { FieldError } from "../field-error"
@@ -16,7 +16,6 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
     const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useState(false)
     const [isPending, startTransition] = useTransition()
-    const formRef = useRef<HTMLFormElement | null>(null)
     const [values, setValues] = useState<{
       email: string
       password: string
@@ -39,16 +38,9 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
 
     useEffect(() => {
       if(actionState.status === "SUCCESS"){
-        const form = formRef.current
-        if(!form) return
-
-        const data = new FormData(form)
-        const email = data.get("email") as string
-        const password = data.get("password") as string
-        
         signIn("credentials", {
-          email,
-          password,
+          email: values.email,
+          password: values.password,
           redirect: true,
           callbackUrl: '/'
         })
@@ -77,7 +69,7 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
                </div>
 
                <div>
-                <button className="flex w-full border-[0.5px] border-zinc-300 dark:border-zinc-800 py-1 rounded-md hover:cursor-pointer justify-center items-center hover:border-zinc-700 gap-3" onClick={() => {
+                <button type="button" className="flex w-full border-[0.5px] border-zinc-300 dark:border-zinc-800 py-1 rounded-md hover:cursor-pointer justify-center items-center hover:border-zinc-700 gap-3" onClick={() => {
                   setLoading(true)
                   signIn("github", {
                     redirect: true,
@@ -93,13 +85,8 @@ export function Auth({ open, setOpen, mode, onChangeMode }: { open: boolean, set
                </div>
 
                <form action={(formdata: FormData) => {
-                 startTransition(async () => {
+                 startTransition(() => {
                   action(formdata)
-                  setValues({
-                    email: '',
-                    password: '',
-                    confirmPassword: ''
-                  })
                  })
                }} className="flex flex-col gap-5">
                 <div>
