@@ -176,34 +176,92 @@ function escapedLines(str: string): string {
 }
 
 export const markdown: Components = {
+  h1: ({ children }) => (
+    <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 mt-6 mb-3 first:mt-0">
+      {children}
+    </h1>
+  ),
   h2: ({ children }) => (
-    <h2 className="dark:text-zinc-300 font-semibold text-sm mt-6 mb-2">{children}</h2>
+    <h2 className="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 mt-6 mb-2.5 pb-1 border-b border-zinc-200/70 dark:border-zinc-800/80">
+      {children}
+    </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="text-zinc-300 font-medium text-sm mt-4 mb-1">{children}</h3>
+    <h3 className="text-sm font-semibold tracking-tight text-zinc-800 dark:text-zinc-200 mt-4 mb-1.5">
+      {children}
+    </h3>
   ),
-  ol: ({ children }) => (
-    <ol className="flex flex-col list-decimal list-inside">{children}</ol>
-  ),
+
   p: ({ children }) => (
-    <p className="dark:text-zinc-300 text-sm leading-relaxed">{children}</p>
+    <p className="text-[14px] leading-6 text-zinc-700 dark:text-zinc-300 my-2.5 selection:bg-zinc-200 dark:selection:bg-zinc-800">
+      {children}
+    </p>
   ),
+
   ul: ({ children }) => (
-    <ul className="flex flex-col">{children}</ul>
+    <ul className="my-3 space-y-1.5 pl-5 list-disc marker:text-zinc-400 dark:marker:text-zinc-600">
+      {children}
+    </ul>
   ),
+
+  ol: ({ children }) => (
+    <ol className="my-3 space-y-1.5 pl-5 list-decimal marker:font-mono marker:text-xs marker:text-zinc-400 dark:marker:text-zinc-500">
+      {children}
+    </ol>
+  ),
+
   li: ({ children }) => (
-    <li className="dark:text-zinc-300 text-black text-sm flex items-start gap-2 my-1">
-      <span className="dark:text-zinc-500 mt-0.5 shrink-0">·</span>
-      <span>{children}</span>
+    <li className="text-[14px] leading-relaxed text-zinc-700 dark:text-zinc-300 pl-1">
+      {children}
     </li>
   ),
-  code: ({ children }) => (
-    <code className="font-bold bg-transparent border border-zinc-400 p-px rounded-sm dark:text-zinc-300 text-black text-sm">{children}</code>
+
+  code: ({children, }) => (
+      <code className="font-mono text-[0.85em] font-medium px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/70 text-zinc-900 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700/60 tracking-tight">
+        {children}
+      </code>
   ),
+
   strong: ({ children }) => (
-    <strong className="dark:text-zinc-200 font-semibold">{children}</strong>
+    <strong className="font-semibold text-zinc-950 dark:text-zinc-100">
+      {children}
+    </strong>
   ),
-}
+
+  blockquote: ({ children }) => (
+    <blockquote className="my-4 border-l-2 border-zinc-300 dark:border-zinc-700 pl-4 py-1 text-sm italic text-zinc-600 dark:text-zinc-400 bg-zinc-50/50 dark:bg-zinc-900/40 rounded-r-lg">
+      {children}
+    </blockquote>
+  ),
+
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="font-medium text-zinc-900 dark:text-zinc-100 underline underline-offset-4 decoration-zinc-400/60 dark:decoration-zinc-600 hover:decoration-zinc-900 dark:hover:decoration-zinc-100 transition-colors">
+      {children}
+    </a>
+  ),
+
+  table: ({ children }) => (
+    <div className="my-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <table className="w-full text-left text-xs border-collapse">
+        {children}
+      </table>
+    </div>
+  ),
+
+  thead: ({ children }) => (
+    <thead className="bg-zinc-100/75 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium">
+      {children}
+    </thead>
+  ),
+
+  th: ({ children }) => <th className="px-3.5 py-2.5 font-semibold">{children}</th>,
+
+  td: ({ children }) => (
+    <td className="px-3.5 py-2.5 border-b border-zinc-100 dark:border-zinc-900 text-zinc-600 dark:text-zinc-300">
+      {children}
+    </td>
+  ),
+};
 
 export async function Base64(file: File){
   return new Promise((resolve, reject) => {
