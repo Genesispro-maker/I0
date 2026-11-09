@@ -5,7 +5,7 @@ import { Collapsible } from "@base-ui/react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
-import { Fragment, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Loader from "../stream-loader"
 
@@ -125,7 +125,7 @@ function Assistantmessage({ isStreaming, Reasoning, error, summary }: Assistant)
   }, [isStreaming])
 
   const hasError = Boolean(error)
-  const showReasoning = !hasError && Boolean(Reasoning)
+  const showReasoning = !hasError
   const isThinking = isStreaming && !hasError && !Reasoning && !summary
 
   return (

@@ -15,7 +15,7 @@ export function Mechanic({messageId}: {messageId: string | undefined}){
 
       const files = Object.fromEntries(Object.entries(sandpack.files).map(([path, file]) => [path, file.code]))
 
-      const res = await fetch("/api/fix", {
+      const res = await fetch("/api/mechanic", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
