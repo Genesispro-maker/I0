@@ -119,14 +119,15 @@ export function Messages({ isProject, project }: Props){
 
 function Assistantmessage({ isStreaming, Reasoning, error, summary }: Assistant) {
   const [open, setOpen] = useState(false)
+  const hasError = Boolean(error)
+  const hasReasoning = Boolean(Reasoning?.trim())
+  const hasSummary = Boolean(summary)
+  const showReasoning = !hasError && hasReasoning
+   const isThinking = isStreaming && !hasError && !hasReasoning && !hasSummary
 
   useEffect(() => {
-    setOpen(isStreaming)
-  }, [isStreaming])
-
-  const hasError = Boolean(error)
-  const showReasoning = !hasError
-  const isThinking = isStreaming && !hasError && !Reasoning && !summary
+    setOpen(isStreaming && hasReasoning && !hasError)
+  }, [isStreaming, hasReasoning, hasError])
 
   return (
     <div>
