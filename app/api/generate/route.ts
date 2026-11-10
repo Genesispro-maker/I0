@@ -3,6 +3,7 @@ import { getAuth } from "../query/get-user";
 import { inngest } from "@/app/lib/inngest/client";
 import { getSubscriptionToken } from "inngest/realtime";
 import { generationchannel } from "@/app/lib/inngest/channel";
+import { Storage } from "@/app/lib/storage";
 
 export async function POST(req: Request) {
   let projectId: string | undefined;
@@ -31,6 +32,8 @@ export async function POST(req: Request) {
       status: 422
     });
 
+    const fileurls = await Storage(body.images ?? [])
+
     const project = await prisma.projects.create({
       data: {
         title: "untitled",
@@ -42,7 +45,7 @@ export async function POST(req: Request) {
               role: "USER",
               content: prompt,
               images: {
-                create: (body.images || []).map((url) => ({ url })),
+                create: (fileurls ?? []).map((url) => ({ url })),
               },
             },
             {
@@ -54,7 +57,9 @@ export async function POST(req: Request) {
       },
       include: {
         messages: {
-          include: { images: true },
+          include: {
+            images: true
+          },
         },
       },
     });
@@ -70,7 +75,7 @@ export async function POST(req: Request) {
         projectId: project.id,
         messageId: assistantmessage?.id ?? "",
         userId: user.id,
-        images: body.images,
+        images: fileurls,
       },
     });
 
