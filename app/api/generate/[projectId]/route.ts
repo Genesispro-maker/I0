@@ -3,6 +3,7 @@ import { getAuth } from "../../query/get-user"
 import { inngest } from "@/app/lib/inngest/client"
 import { getSubscriptionToken } from "inngest/realtime"
 import { generationchannel } from "@/app/lib/inngest/channel"
+import { Storage } from "@/app/lib/storage"
 
 export async function POST(req: Request, { params,}: { params: Promise<{projectId: string}> }){
   const { projectId } = await params
@@ -43,6 +44,7 @@ export async function POST(req: Request, { params,}: { params: Promise<{projectI
     })
 
     const lastmessage = project.messages.find((m) => m.role === "ASSISTANT")
+    const fileurls = await Storage(body.images ?? [])
 
     const [, assitantmessage] = await Promise.all([
       prisma.message.create({
@@ -50,6 +52,9 @@ export async function POST(req: Request, { params,}: { params: Promise<{projectI
           projectId,
           role: "USER",
           content: body.prompt,
+          images: {
+            create: (fileurls ?? []).map((url) => ({ url }))
+          }
         }
       }),
 
@@ -73,7 +78,7 @@ export async function POST(req: Request, { params,}: { params: Promise<{projectI
         messageId: assitantmessage.id,
         file: lastmessage?.generations?.files,
         reasoning: lastmessage?.reasoning,
-        images: body.images
+        images: fileurls
       }
     })
 
