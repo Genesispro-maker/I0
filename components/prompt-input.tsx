@@ -26,7 +26,7 @@ interface Props {
 }
 
 export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
-  function PromptInput({ className, size, onSubmit, user,  onInputResize, files, loading, handleupload }, ref) {
+  function PromptInput({ className, size, onSubmit, user, onInputResize, files, loading, handleupload }, ref) {
     const [prompt, setPrompt] = useState(() => {
       if(typeof window !== "undefined"){
         return localStorage.getItem("prompt") || "" 
@@ -69,7 +69,11 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
 
     const submit = useCallback(async () => {
       if (!prompt.trim()) return
-      onSubmit(prompt)
+
+      try {
+        await onSubmit(prompt)
+      } catch {}
+
       localStorage.removeItem(prompt)
       setPrompt('')
     }, [prompt, onSubmit])
