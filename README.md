@@ -4,7 +4,7 @@ Describe a UI in plain language and get back a working React component. Preview 
 
 **[Live demo](https://i0-two.vercel.app)** · Next.js · TypeScript · Inngest · Prisma · Gemini
 
- [**Watch the Project Demo Video on Google Drive**](https://drive.google.com/file/d/1BVgxPGkYiJC5-MMRv-5sSXk2RUYcbrVu/view?usp=drive_link)
+[![I0-demo](https://img.youtube.com/vi/2JgmgjuwJ3E/hqdefault.jpg)](https://youtu.be/2JgmgjuwJ3E)
  
 ## What it does
 
