@@ -1,4 +1,4 @@
-import { ArrowUp, Plus, SquareSquare } from "lucide-react"
+import { ArrowUp, Plus, Squircle } from "lucide-react"
 import { User } from "@/app/types/types"
 import { Getfiletype } from "@/app/util/constants"
 import React, { ChangeEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, } from "react"
@@ -146,7 +146,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
                 <Plus aria-hidden size={18} className="shrink-0" />
               </button>
               <button onClick={submit} className="active:scale-75 hover:cursor-pointer hover:scale-110 transition-all duration-300 bg-black dark:bg-white p-2 sm:p-1 text-white rounded-md dark:text-black">
-                {loading ? <SquareSquare size={18} className="shrink-0" aria-hidden /> : <ArrowUp size={18} className="shrink-0" aria-hidden />}
+                {loading ? <Squircle size={18} className="shrink-0" aria-hidden /> : <ArrowUp size={18} className="shrink-0" aria-hidden />}
               </button>
             </div>
           </Dialog.Root>
