@@ -71,7 +71,7 @@ export const PromptInput = React.memo(forwardRef<InputHandle, Props>(
       if (!prompt.trim()) return
 
       try {
-        await onSubmit(prompt)
+         onSubmit(prompt)
       } catch {}
 
       localStorage.removeItem(prompt)
