@@ -43,6 +43,14 @@ flowchart LR
 
 **Gemini through the OpenAI Responses API.** The app talks to Gemini (Google AI Studio) using the OpenAI Responses API format.
 
+## Desktop (experimental)
+
+`desktop/src-tauri` contains an early experiment with [Tauri](https://tauri.app/)
+to see how the app behaves as a desktop application rather than a browser tab.
+It's not shipped and not part of the main app — it's a test of the runtime and
+a place to learn how a long-running desktop process differs from a serverless
+web app.
+
 ## Tech stack
 
 | Area | Tools |
